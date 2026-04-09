@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weekly Carbon Footprint</title>
+</head>
+<body>
+  <h1>Weekly Carbon Footprint</h1>
+<h1> this is all chatgpt styling i will be changing it.</h1>
+  <div class="top-row">
+    <p class="sub">Enter your weekly habits to see your climate impact.</p>
+    <div class="toggle-wrap">
+      <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
+      <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🥩 Diet</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>Meat meals per week</label>
+        <input type="number" id="meat-meals" value="5" min="0" max="21" />
+      </div>
+      <div class="field">
+        <label>Meat type</label>
+        <select id="meat-type">
+          <option value="beef">Beef</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚗 Transport</h2>
+    <div class="field-row">
+      <div class="field">
+        <label id="car-km-label">miles driven per month</label>
+<input type="number" id="car-km" value="400" min="0" />
+      </div>
+      <div class="field">
+        <label>Fuel type</label>
+        <select id="car-fuel">
+        <option value="petrol">Gas</option>
+        <option value="electric">Electric</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📦 Shopping & packages</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>Packages ordered per week</label>
+        <input type="number" id="packages" value="2" min="0" />
+      </div>
+      <div class="field">
+        <label>Delivery speed</label>
+        <select id="delivery-type">
+          <option value="standard">Standard</option>
+          <option value="express">Express (next day)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>✈️ Flights</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>Flights per year</label>
+        <input type="number" id="flight-count" value="2" min="0" />
+      </div>
+      <div class="field">
+        <label id="flight-km-label">Avg distance (km)</label>
+        <input type="number" id="flight-km" value="1000" min="0" />
+      </div>
+    </div>
+  </div>
+
+  <div class="err" id="err"></div>
+  <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
+
+  <div id="result">
+    <h2>Your estimated weekly carbon footprint</h2>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="val" id="res-total">—</div>
+        <div class="lbl" id="lbl-total">kg CO₂e / week</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="res-annual">—</div>
+        <div class="lbl" id="lbl-annual">kg CO₂e / year</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="res-diet">—</div>
+        <div class="lbl" id="lbl-diet">kg from diet</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="res-transport">—</div>
+        <div class="lbl" id="lbl-transport">kg from transport</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="res-packages">—</div>
+        <div class="lbl" id="lbl-packages">kg from packages</div>
+      </div>
+      <div class="result-item">
+        <div class="val" id="res-flights">—</div>
+        <div class="lbl" id="lbl-flights">kg from flights</div>
+      </div>
+    </div>
+    <div class="context" id="res-context"></div>
+  </div>
+
+  <script>
+    let units = "metric";
+    let lastResults = null;
+
+    const KM_TO_MI = 0.621371;
+    const MI_TO_KM = 1.60934;
+    const KG_TO_LB = 2.20462;
+
+  const MEAT_KG_PER_MEAL = { beef: 0.25 };
+const MEAT_ACTIVITY = {
+  beef: "food-type_beef_roast_beef_roasted_baked"
+};
+   const CAR_ACTIVITY = {
+  petrol: "passenger_vehicle-vehicle_type_passenger_cars-fuel_source_gasoline-engine_size_na-vehicle_age_na-vehicle_weight_na",
+  electric: "passenger_vehicle-vehicle_type_passenger_cars-fuel_source_bev-engine_size_na-vehicle_age_na-vehicle_weight_na"
+};
+    const DELIVERY_DISTANCE = { standard: 50, express: 100 };
+
+    function setUnits(u) {
+      const prevUnits = units;
+      units = u;
+
+      document.getElementById("btn-metric").classList.toggle("active", u === "metric");
+      document.getElementById("btn-imperial").classList.toggle("active", u === "imperial");
+
+      // update input labels
+document.getElementById("car-km-label").textContent = u === "metric" ? "km driven per month" : "miles driven per month";
+document.getElementById("flight-km-label").textContent = u === "metric" ? "Avg distance (km)" : "Avg distance (miles)";
+
+      // convert existing input values
+      const carInput = document.getElementById("car-km");
+      const flightInput = document.getElementById("flight-km");
+     if (prevUnits !== u) {
+  if (u === "imperial") {
+    carInput.value = Math.round(parseFloat(carInput.value) * KM_TO_MI);
+    flightInput.value = Math.round(parseFloat(flightInput.value) * KM_TO_MI);
+  } else {
+    carInput.value = Math.round(parseFloat(carInput.value) * MI_TO_KM);
+    flightInput.value = Math.round(parseFloat(flightInput.value) * MI_TO_KM);
+  }
+}
+
+      // re-render results if we already have them
+      if (lastResults) renderResults(lastResults);
+    }
+
+    function renderResults({ diet, transport, pkgs, flights }) {
+      const total = diet + transport + pkgs + flights;
+      const annual = total * 52;
+      const unit = units === "metric" ? "kg" : "lb";
+      const factor = units === "metric" ? 1 : KG_TO_LB;
+      const avgWeekly = units === "metric" ? 200 : 200 * KG_TO_LB;
+
+      document.getElementById("res-total").textContent = (total * factor).toFixed(2);
+      document.getElementById("res-annual").textContent = Math.round(annual * factor);
+      document.getElementById("res-diet").textContent = (diet * factor).toFixed(2);
+      document.getElementById("res-transport").textContent = (transport * factor).toFixed(2);
+      document.getElementById("res-packages").textContent = (pkgs * factor).toFixed(2);
+      document.getElementById("res-flights").textContent = (flights * factor).toFixed(2);
+
+      document.getElementById("lbl-total").textContent = `${unit} CO₂e / week`;
+      document.getElementById("lbl-annual").textContent = `${unit} CO₂e / year`;
+      document.getElementById("lbl-diet").textContent = `${unit} from diet`;
+      document.getElementById("lbl-transport").textContent = `${unit} from transport`;
+      document.getElementById("lbl-packages").textContent = `${unit} from packages`;
+      document.getElementById("lbl-flights").textContent = `${unit} from flights`;
+
+      const pct = Math.round((total / (units === "metric" ? 200 : 200)) * 100);
+      document.getElementById("res-context").textContent =
+        `The global average weekly footprint is around ${Math.round(avgWeekly)} ${unit} CO₂e. Yours is ${pct}% of that. ` +
+        `Your biggest emission source is ${getBiggest(diet, transport, pkgs, flights)}.`;
+
+      document.getElementById("result").style.display = "block";
+    }
+
+    async function post(body) {
+      const res = await fetch("/api/estimate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.message || data.error);
+      return data;
+    }
+
+    async function calculate() {
+      document.getElementById("err").textContent = "";
+      document.getElementById("result").style.display = "none";
+      const btn = document.getElementById("calc-btn");
+      btn.disabled = true;
+      btn.textContent = "Calculating...";
+
+      try {
+        const meatMeals = parseFloat(document.getElementById("meat-meals").value) || 0;
+        const meatType = document.getElementById("meat-type").value;
+        const carInput = parseFloat(document.getElementById("car-km").value) || 0;
+        const carFuel = document.getElementById("car-fuel").value;
+        const packages = parseFloat(document.getElementById("packages").value) || 0;
+        const deliveryType = document.getElementById("delivery-type").value;
+        const flightCount = parseFloat(document.getElementById("flight-count").value) || 0;
+        const flightInput = parseFloat(document.getElementById("flight-km").value) || 0;
+
+        // always convert to metric for API
+const carMonthlyMiles = carInput;
+const carKm = (carMonthlyMiles / 4.33) * MI_TO_KM;
+const flightKm = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
+
+        const meatKgPerWeek = meatMeals * MEAT_KG_PER_MEAL[meatType];
+        const flightKmPerWeek = (flightCount * flightKm) / 52;
+        const deliveryDistance = DELIVERY_DISTANCE[deliveryType];
+
+        const [dietData, carData, packageData, flightData] = await Promise.all([
+          meatKgPerWeek > 0 ? post({
+            emission_factor: { activity_id: MEAT_ACTIVITY[meatType] },
+            parameters: { weight: meatKgPerWeek, weight_unit: "kg" }
+          }) : Promise.resolve({ co2e: 0 }),
+
+          carKm > 0 ? post({
+            emission_factor: { activity_id: CAR_ACTIVITY[carFuel] },
+            parameters: { distance: carKm, distance_unit: "km" }
+          }) : Promise.resolve({ co2e: 0 }),
+
+          packages > 0 ? post({
+            emission_factor: { activity_id: "freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t" },
+            parameters: { weight: packages * 0.5, weight_unit: "kg", distance: deliveryDistance, distance_unit: "km" }
+          }) : Promise.resolve({ co2e: 0 }),
+
+          flightKmPerWeek > 0 ? post({
+            emission_factor: { activity_id: "passenger_flight-route_type_outside_uk-aircraft_type_na-distance_na-class_economy-rf_included-distance_uplift_included" },
+            parameters: { distance: flightKmPerWeek, distance_unit: "km", passengers: 1 }
+          }) : Promise.resolve({ co2e: 0 })
+        ]);
+
+        lastResults = {
+          diet: dietData.co2e || 0,
+          transport: carData.co2e || 0,
+          pkgs: packageData.co2e || 0,
+          flights: flightData.co2e || 0
+        };
+
+        renderResults(lastResults);
+      } catch(e) {
+        document.getElementById("err").textContent = "Error: " + e.message;
+      }
+
+      btn.disabled = false;
+      btn.textContent = "Calculate my weekly footprint";
+    }
+
+    function getBiggest(diet, transport, pkgs, flights) {
+      const map = { "diet": diet, "transport": transport, "packages": pkgs, "flights": flights };
+      return Object.entries(map).sort((a, b) => b[1] - a[1])[0][0];
+    }
+  </script>
+</body>
+</html>
