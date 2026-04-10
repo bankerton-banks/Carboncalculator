@@ -4,21 +4,26 @@
   <link rel="stylesheet" href="styles.css">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Weekly Carbon Footprint</title>
+  <title>Consumer4ever
+  </title>
 </head>
 <body>
-  <h1>Weekly Carbon Footprint</h1>
-<h1> this is all chatgpt styling i will be changing it.</h1>
-  <div class="top-row">
-    <p class="sub">Enter your weekly habits to see your climate impact.</p>
-    <div class="toggle-wrap">
-      <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
-      <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+
+  <aside class="sidebar">
+    <h1>enter your data</h1>
+  </aside>
+
+  <div class="main-content">
+    <div class="top-row">
+      <p class="sub">Enter your weekly habits to see your climate impact.</p>
+      <div class="toggle-wrap">
+        <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
+        <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+      </div>
     </div>
-  </div>
 
   <div class="card">
-    <h2>🥩 Diet</h2>
+    <h2> Diet</h2>
     <div class="field-row">
       <div class="field">
         <label>Meat meals per week</label>
@@ -34,7 +39,7 @@
   </div>
 
   <div class="card">
-    <h2>🚗 Transport</h2>
+    <h2> Transport</h2>
     <div class="field-row">
       <div class="field">
         <label id="car-km-label">miles driven per month</label>
@@ -51,7 +56,7 @@
   </div>
 
   <div class="card">
-    <h2>📦 Shopping & packages</h2>
+    <h2> Shopping & packages</h2>
     <div class="field-row">
       <div class="field">
         <label>Packages ordered per week</label>
@@ -68,7 +73,7 @@
   </div>
 
   <div class="card">
-    <h2>✈️ Flights</h2>
+    <h2> Flights</h2>
     <div class="field-row">
       <div class="field">
         <label>Flights per year</label>
