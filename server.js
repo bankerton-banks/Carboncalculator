@@ -5,7 +5,7 @@ console.log("Key loaded:", API_KEY);
 
 const app = express();
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static("."));
 
 app.post("/api/estimate", async (req, res) => {
   try {
@@ -31,7 +31,7 @@ app.post("/api/estimate", async (req, res) => {
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: err.message });
-  }
+  }ƒ
 });
 
 app.listen(3000, () => console.log("Running on http://localhost:3000"));
