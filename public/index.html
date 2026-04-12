@@ -4,139 +4,157 @@
   <link rel="stylesheet" href="styles.css">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Consumer4ever
-  </title>
+  <title>Consumer4ever</title>
 </head>
-<body>
+<body class="page-wrap">
 
   <aside class="sidebar">
-    <h1>enter your data</h1>
+    <h1>Enter your weekly habits to see your climate impact.</h1>
+    <h2>your carbon footprint will be estimated off of these inputs <br>and the US average consumption of electricity and fossil fuels.</h2>
+    <div class="toggle-wrap">
+      <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
+      <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+    </div>
   </aside>
 
   <div class="main-content">
-    <div class="top-row">
-      <p class="sub">Enter your weekly habits to see your climate impact.</p>
-      <div class="toggle-wrap">
-        <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
-        <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+
+
+    <!-- DIET -->
+    <div class="card">
+      <h2>Diet</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>Meat meals per week</label>
+          <input type="number" id="meat-meals" value="5" min="0" max="21" />
+        </div>
+        <div class="field">
+          <label>Meat type</label>
+          <select id="meat-type">
+            <option value="beef">Beef</option>
+            <option value="pork">Pork</option>
+            <option value="chicken">Chicken</option>
+            <option value="lamb">Lamb</option>
+          </select>
+        </div>
+      </div>
+      <p class="field-hint">Select the meat type you consume most often.</p>
+    </div>
+
+    <!-- SHOPPING & PACKAGES -->
+    <div class="card">
+      <h2>Shopping &amp; packages</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>Packages ordered per week</label>
+          <input type="number" id="packages" value="2" min="0" />
+        </div>
+        <div class="field">
+          <label>Delivery speed</label>
+          <select id="delivery-type">
+            <option value="standard">Standard</option>
+            <option value="express">Express (next day)</option>
+          </select>
+        </div>
       </div>
     </div>
 
-  <div class="card">
-    <h2> Diet</h2>
-    <div class="field-row">
-      <div class="field">
-        <label>Meat meals per week</label>
-        <input type="number" id="meat-meals" value="5" min="0" max="21" />
+    <!-- CLOTHING -->
+    <div class="card">
+      <h2>Clothing</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>Monthly spend on new clothes (USD)</label>
+          <input type="number" id="clothing-spend" value="50" min="0" />
+        </div>
+        <div class="field">
+          <label>Monthly spend on secondhand clothes (USD)</label>
+          <input type="number" id="clothing-secondhand-spend" value="0" min="0" />
+        </div>
       </div>
-      <div class="field">
-        <label>Meat type</label>
-        <select id="meat-type">
-          <option value="beef">Beef</option>
-        </select>
+      <p class="field-hint">Secondhand clothing has a significantly lower carbon footprint than new.</p>
+    </div>
+
+    <!-- FLIGHTS -->
+    <div class="card">
+      <h2>Flights</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>Flights per year</label>
+          <input type="number" id="flight-count" value="2" min="0" />
+        </div>
+        <div class="field">
+          <label id="flight-km-label">Avg distance (miles)</label>
+          <input type="number" id="flight-km" value="621" min="0" />
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h2> Transport</h2>
-    <div class="field-row">
-      <div class="field">
-        <label id="car-km-label">miles driven per month</label>
-<input type="number" id="car-km" value="400" min="0" />
+    <div class="err" id="err"></div>
+    <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
+
+    <div id="result">
+      <h2>Your estimated weekly carbon footprint</h2>
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="val" id="res-total">—</div>
+          <div class="lbl" id="lbl-total">kg CO₂e / week</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="res-annual">—</div>
+          <div class="lbl" id="lbl-annual">kg CO₂e / year</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="res-diet">—</div>
+          <div class="lbl" id="lbl-diet">kg from diet</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="res-packages">—</div>
+          <div class="lbl" id="lbl-packages">kg from packages</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="res-clothing">—</div>
+          <div class="lbl" id="lbl-clothing">kg from clothing</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="res-flights">—</div>
+          <div class="lbl" id="lbl-flights">kg from flights</div>
+        </div>
       </div>
-      <div class="field">
-        <label>Fuel type</label>
-        <select id="car-fuel">
-        <option value="petrol">Gas</option>
-        <option value="electric">Electric</option>
-        </select>
-      </div>
+      <div class="context" id="res-context"></div>
     </div>
-  </div>
-
-  <div class="card">
-    <h2> Shopping & packages</h2>
-    <div class="field-row">
-      <div class="field">
-        <label>Packages ordered per week</label>
-        <input type="number" id="packages" value="2" min="0" />
-      </div>
-      <div class="field">
-        <label>Delivery speed</label>
-        <select id="delivery-type">
-          <option value="standard">Standard</option>
-          <option value="express">Express (next day)</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2> Flights</h2>
-    <div class="field-row">
-      <div class="field">
-        <label>Flights per year</label>
-        <input type="number" id="flight-count" value="2" min="0" />
-      </div>
-      <div class="field">
-        <label id="flight-km-label">Avg distance (km)</label>
-        <input type="number" id="flight-km" value="1000" min="0" />
-      </div>
-    </div>
-  </div>
-
-  <div class="err" id="err"></div>
-  <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
-
-  <div id="result">
-    <h2>Your estimated weekly carbon footprint</h2>
-    <div class="result-grid">
-      <div class="result-item">
-        <div class="val" id="res-total">—</div>
-        <div class="lbl" id="lbl-total">kg CO₂e / week</div>
-      </div>
-      <div class="result-item">
-        <div class="val" id="res-annual">—</div>
-        <div class="lbl" id="lbl-annual">kg CO₂e / year</div>
-      </div>
-      <div class="result-item">
-        <div class="val" id="res-diet">—</div>
-        <div class="lbl" id="lbl-diet">kg from diet</div>
-      </div>
-      <div class="result-item">
-        <div class="val" id="res-transport">—</div>
-        <div class="lbl" id="lbl-transport">kg from transport</div>
-      </div>
-      <div class="result-item">
-        <div class="val" id="res-packages">—</div>
-        <div class="lbl" id="lbl-packages">kg from packages</div>
-      </div>
-      <div class="result-item">
-        <div class="val" id="res-flights">—</div>
-        <div class="lbl" id="lbl-flights">kg from flights</div>
-      </div>
-    </div>
-    <div class="context" id="res-context"></div>
   </div>
 
   <script>
-    let units = "metric";
+    let units = "imperial";
     let lastResults = null;
 
     const KM_TO_MI = 0.621371;
     const MI_TO_KM = 1.60934;
     const KG_TO_LB = 2.20462;
 
-  const MEAT_KG_PER_MEAL = { beef: 0.25 };
-const MEAT_ACTIVITY = {
-  beef: "food-type_beef_roast_beef_roasted_baked"
-};
-   const CAR_ACTIVITY = {
-  petrol: "passenger_vehicle-vehicle_type_passenger_cars-fuel_source_gasoline-engine_size_na-vehicle_age_na-vehicle_weight_na",
-  electric: "passenger_vehicle-vehicle_type_passenger_cars-fuel_source_bev-engine_size_na-vehicle_age_na-vehicle_weight_na"
-};
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("flight-km-label").textContent = "Avg distance (miles)";
+      document.getElementById("btn-imperial").classList.add("active");
+      document.getElementById("btn-metric").classList.remove("active");
+      document.getElementById("result").style.display = "none";
+    });
+
+    const MEAT_KG_PER_MEAL = { beef: 0.25, pork: 0.20, chicken: 0.15, lamb: 0.25 };
+    const MEAT_ACTIVITY = {
+      beef:    "food-type_beef_roast_beef_roasted_baked",
+      pork:    "food-type_pork_cured_ham_roasted_baked",
+      chicken: "food-type_chicken_roasted_baked",
+      lamb:    "food-type_lamb_roasted_baked"
+    };
+
     const DELIVERY_DISTANCE = { standard: 50, express: 100 };
+
+    // consumer_goods-type_clothing + _reused are deprecated on Climatiq.
+    // Using current US replacement: EPA Supply Chain Factors v1.3 (NAICS 315990, status: Current)
+    const CLOTHING_NEW_ACTIVITY = "consumer_goods-type_apparel_accessories_and_other_apparel";
+    // No active secondhand factor on Climatiq — 20% of new footprint (~80% reduction per lifecycle studies)
+    const CLOTHING_SECONDHAND_DISCOUNT = 0.20;
 
     function setUnits(u) {
       const prevUnits = units;
@@ -144,53 +162,44 @@ const MEAT_ACTIVITY = {
 
       document.getElementById("btn-metric").classList.toggle("active", u === "metric");
       document.getElementById("btn-imperial").classList.toggle("active", u === "imperial");
+      document.getElementById("flight-km-label").textContent = u === "metric" ? "Avg distance (km)" : "Avg distance (miles)";
 
-      // update input labels
-document.getElementById("car-km-label").textContent = u === "metric" ? "km driven per month" : "miles driven per month";
-document.getElementById("flight-km-label").textContent = u === "metric" ? "Avg distance (km)" : "Avg distance (miles)";
+      if (prevUnits !== u) {
+        const flightInput = document.getElementById("flight-km");
+        flightInput.value = u === "imperial"
+          ? Math.round(parseFloat(flightInput.value) * KM_TO_MI)
+          : Math.round(parseFloat(flightInput.value) * MI_TO_KM);
+      }
 
-      // convert existing input values
-      const carInput = document.getElementById("car-km");
-      const flightInput = document.getElementById("flight-km");
-     if (prevUnits !== u) {
-  if (u === "imperial") {
-    carInput.value = Math.round(parseFloat(carInput.value) * KM_TO_MI);
-    flightInput.value = Math.round(parseFloat(flightInput.value) * KM_TO_MI);
-  } else {
-    carInput.value = Math.round(parseFloat(carInput.value) * MI_TO_KM);
-    flightInput.value = Math.round(parseFloat(flightInput.value) * MI_TO_KM);
-  }
-}
-
-      // re-render results if we already have them
       if (lastResults) renderResults(lastResults);
     }
 
-    function renderResults({ diet, transport, pkgs, flights }) {
-      const total = diet + transport + pkgs + flights;
+    function renderResults({ diet, pkgs, clothing, flights }) {
+      const total  = diet + pkgs + clothing + flights;
       const annual = total * 52;
-      const unit = units === "metric" ? "kg" : "lb";
+      const unit   = units === "metric" ? "kg" : "lb";
       const factor = units === "metric" ? 1 : KG_TO_LB;
       const avgWeekly = units === "metric" ? 200 : 200 * KG_TO_LB;
 
-      document.getElementById("res-total").textContent = (total * factor).toFixed(2);
-      document.getElementById("res-annual").textContent = Math.round(annual * factor);
-      document.getElementById("res-diet").textContent = (diet * factor).toFixed(2);
-      document.getElementById("res-transport").textContent = (transport * factor).toFixed(2);
-      document.getElementById("res-packages").textContent = (pkgs * factor).toFixed(2);
-      document.getElementById("res-flights").textContent = (flights * factor).toFixed(2);
+      document.getElementById("res-total").textContent    = (total    * factor).toFixed(2);
+      document.getElementById("res-annual").textContent   = Math.round(annual  * factor);
+      document.getElementById("res-diet").textContent     = (diet     * factor).toFixed(2);
+      document.getElementById("res-packages").textContent = (pkgs     * factor).toFixed(2);
+      document.getElementById("res-clothing").textContent = (clothing * factor).toFixed(2);
+      document.getElementById("res-flights").textContent  = (flights  * factor).toFixed(2);
 
-      document.getElementById("lbl-total").textContent = `${unit} CO₂e / week`;
-      document.getElementById("lbl-annual").textContent = `${unit} CO₂e / year`;
-      document.getElementById("lbl-diet").textContent = `${unit} from diet`;
-      document.getElementById("lbl-transport").textContent = `${unit} from transport`;
+      document.getElementById("lbl-total").textContent    = `${unit} CO2e / week`;
+      document.getElementById("lbl-annual").textContent   = `${unit} CO2e / year`;
+      document.getElementById("lbl-diet").textContent     = `${unit} from diet`;
       document.getElementById("lbl-packages").textContent = `${unit} from packages`;
-      document.getElementById("lbl-flights").textContent = `${unit} from flights`;
+      document.getElementById("lbl-clothing").textContent = `${unit} from clothing`;
+      document.getElementById("lbl-flights").textContent  = `${unit} from flights`;
 
-      const pct = Math.round((total / (units === "metric" ? 200 : 200)) * 100);
+      const pct = Math.round((total / 200) * 100);
       document.getElementById("res-context").textContent =
-        `The global average weekly footprint is around ${Math.round(avgWeekly)} ${unit} CO₂e. Yours is ${pct}% of that. ` +
-        `Your biggest emission source is ${getBiggest(diet, transport, pkgs, flights)}.`;
+        `The global average weekly footprint is around ${Math.round(avgWeekly)} ${unit} CO2e. ` +
+        `Yours is ${pct}% of that. ` +
+        `Your biggest emission source is ${getBiggest({ diet, pkgs, clothing, flights })}.`;
 
       document.getElementById("result").style.display = "block";
     }
@@ -214,38 +223,37 @@ document.getElementById("flight-km-label").textContent = u === "metric" ? "Avg d
       btn.textContent = "Calculating...";
 
       try {
-        const meatMeals = parseFloat(document.getElementById("meat-meals").value) || 0;
-        const meatType = document.getElementById("meat-type").value;
-        const carInput = parseFloat(document.getElementById("car-km").value) || 0;
-        const carFuel = document.getElementById("car-fuel").value;
-        const packages = parseFloat(document.getElementById("packages").value) || 0;
+        const meatMeals    = parseFloat(document.getElementById("meat-meals").value)                || 0;
+        const meatType     = document.getElementById("meat-type").value;
+        const packages     = parseFloat(document.getElementById("packages").value)                  || 0;
         const deliveryType = document.getElementById("delivery-type").value;
-        const flightCount = parseFloat(document.getElementById("flight-count").value) || 0;
-        const flightInput = parseFloat(document.getElementById("flight-km").value) || 0;
+        const clothingNew  = parseFloat(document.getElementById("clothing-spend").value)            || 0;
+        const clothingUsed = parseFloat(document.getElementById("clothing-secondhand-spend").value) || 0;
+        const flightCount  = parseFloat(document.getElementById("flight-count").value)              || 0;
+        const flightInput  = parseFloat(document.getElementById("flight-km").value)                 || 0;
 
-        // always convert to metric for API
-const carMonthlyMiles = carInput;
-const carKm = (carMonthlyMiles / 4.33) * MI_TO_KM;
-const flightKm = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
-
-        const meatKgPerWeek = meatMeals * MEAT_KG_PER_MEAL[meatType];
+        const flightKm        = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
+        const meatKgPerWeek   = meatMeals * MEAT_KG_PER_MEAL[meatType];
         const flightKmPerWeek = (flightCount * flightKm) / 52;
-        const deliveryDistance = DELIVERY_DISTANCE[deliveryType];
+        const deliveryDist    = DELIVERY_DISTANCE[deliveryType];
+        const clothingNewPerWeek  = clothingNew  / 4.33;
+        const clothingUsedPerWeek = clothingUsed / 4.33;
 
-        const [dietData, carData, packageData, flightData] = await Promise.all([
+        const [dietData, packageData, clothingNewData, flightData] = await Promise.all([
+
           meatKgPerWeek > 0 ? post({
             emission_factor: { activity_id: MEAT_ACTIVITY[meatType] },
             parameters: { weight: meatKgPerWeek, weight_unit: "kg" }
           }) : Promise.resolve({ co2e: 0 }),
 
-          carKm > 0 ? post({
-            emission_factor: { activity_id: CAR_ACTIVITY[carFuel] },
-            parameters: { distance: carKm, distance_unit: "km" }
-          }) : Promise.resolve({ co2e: 0 }),
-
           packages > 0 ? post({
             emission_factor: { activity_id: "freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t" },
-            parameters: { weight: packages * 0.5, weight_unit: "kg", distance: deliveryDistance, distance_unit: "km" }
+            parameters: { weight: packages * 0.5, weight_unit: "kg", distance: deliveryDist, distance_unit: "km" }
+          }) : Promise.resolve({ co2e: 0 }),
+
+          clothingNewPerWeek > 0 ? post({
+            emission_factor: { activity_id: CLOTHING_NEW_ACTIVITY, region: "US" },
+            parameters: { money: clothingNewPerWeek, money_unit: "usd" }
           }) : Promise.resolve({ co2e: 0 }),
 
           flightKmPerWeek > 0 ? post({
@@ -254,14 +262,22 @@ const flightKm = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
           }) : Promise.resolve({ co2e: 0 })
         ]);
 
+        const clothingNewCo2e  = clothingNewData.co2e || 0;
+        const clothingUsedCo2e = clothingNewPerWeek > 0
+          ? (clothingUsedPerWeek / clothingNewPerWeek) * clothingNewCo2e * CLOTHING_SECONDHAND_DISCOUNT
+          : clothingUsedPerWeek > 0
+            ? clothingUsedPerWeek * 0.12 * CLOTHING_SECONDHAND_DISCOUNT
+            : 0;
+
         lastResults = {
-          diet: dietData.co2e || 0,
-          transport: carData.co2e || 0,
-          pkgs: packageData.co2e || 0,
-          flights: flightData.co2e || 0
+          diet:     dietData.co2e    || 0,
+          pkgs:     packageData.co2e || 0,
+          clothing: clothingNewCo2e + clothingUsedCo2e,
+          flights:  flightData.co2e  || 0
         };
 
         renderResults(lastResults);
+
       } catch(e) {
         document.getElementById("err").textContent = "Error: " + e.message;
       }
@@ -270,8 +286,7 @@ const flightKm = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
       btn.textContent = "Calculate my weekly footprint";
     }
 
-    function getBiggest(diet, transport, pkgs, flights) {
-      const map = { "diet": diet, "transport": transport, "packages": pkgs, "flights": flights };
+    function getBiggest(map) {
       return Object.entries(map).sort((a, b) => b[1] - a[1])[0][0];
     }
   </script>
