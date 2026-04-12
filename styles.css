@@ -10,7 +10,7 @@ body {
   color: #111;
   background: #fff;
   font-size: 1em;
-  font-weight: 400;
+  font-weight: normal;
 }
 
 /* ── Page layout: sidebar left, content right ── */
