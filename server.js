@@ -1,15 +1,6 @@
 import express from "express";
 import fetch from "node-fetch";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const env = require("fs").readFileSync(".env", "utf8")
-  .split("\n")
-  .reduce((acc, line) => {
-    const [key, val] = line.split("=");
-    if (key && val) acc[key.trim()] = val.trim();
-    return acc;
-  }, {});
-const API_KEY = env.CLIMATIQ_API_KEY;
+const API_KEY = process.env.CLIMATIQ_API_KEY;
 console.log("Key loaded:", API_KEY);
 
 const app = express();
