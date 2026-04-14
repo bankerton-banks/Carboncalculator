@@ -7,7 +7,7 @@
   <title>Consumer4ever</title>
 </head>
 <body class="page-wrap">
-
+ 
   <aside class="sidebar">
     <h1>Enter your weekly habits to see your climate impact.</h1>
     <h2>your carbon footprint will be estimated off of these inputs and the US average consumption of electricity and fossil fuels.</h2>
@@ -16,10 +16,9 @@
       <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
     </div>
   </aside>
-
+ 
   <div class="main-content">
-
-
+ 
     <!-- DIET -->
     <div class="card">
       <h2>Diet</h2>
@@ -40,7 +39,7 @@
       </div>
       <p class="field-hint">Select the meat type you consume most often.</p>
     </div>
-
+ 
     <!-- SHOPPING & PACKAGES -->
     <div class="card">
       <h2>Shopping &amp; packages</h2>
@@ -58,7 +57,7 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- CLOTHING -->
     <div class="card">
       <h2>Clothing</h2>
@@ -74,7 +73,7 @@
       </div>
       <p class="field-hint">Secondhand clothing has a significantly lower carbon footprint than new.</p>
     </div>
-
+ 
     <!-- FLIGHTS -->
     <div class="card">
       <h2>Flights</h2>
@@ -89,10 +88,10 @@
         </div>
       </div>
     </div>
-
+ 
     <div class="err" id="err"></div>
     <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
-
+ 
     <div id="result">
       <h2>Your estimated weekly carbon footprint</h2>
       <div class="result-grid">
@@ -122,24 +121,29 @@
         </div>
       </div>
       <div class="context" id="res-context"></div>
+ 
+      <!-- ── NEW: button to go to the chart page ── -->
+      <button class="go" id="chart-btn" onclick="goToChart()" style="margin-top:1.5rem;">
+        See how you compare globally →
+      </button>
     </div>
   </div>
-
+ 
   <script>
     let units = "imperial";
     let lastResults = null;
-
+ 
     const KM_TO_MI = 0.621371;
     const MI_TO_KM = 1.60934;
     const KG_TO_LB = 2.20462;
-
+ 
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("flight-km-label").textContent = "Avg distance (miles)";
       document.getElementById("btn-imperial").classList.add("active");
       document.getElementById("btn-metric").classList.remove("active");
       document.getElementById("result").style.display = "none";
     });
-
+ 
     const MEAT_KG_PER_MEAL = { beef: 0.25, pork: 0.20, chicken: 0.15, lamb: 0.25 };
     const MEAT_ACTIVITY = {
       beef:    "food-type_beef_roast_beef_roasted_baked",
@@ -147,63 +151,56 @@
       chicken: "food-type_chicken_roasted_baked",
       lamb:    "food-type_lamb_roasted_baked"
     };
-
+ 
     const DELIVERY_DISTANCE = { standard: 50, express: 100 };
-
-    // consumer_goods-type_clothing + _reused are deprecated on Climatiq.
-    // Using current US replacement: EPA Supply Chain Factors v1.3 (NAICS 315990, status: Current)
     const CLOTHING_NEW_ACTIVITY = "consumer_goods-type_apparel_accessories_and_other_apparel";
-    // No active secondhand factor on Climatiq — 20% of new footprint (~80% reduction per lifecycle studies)
     const CLOTHING_SECONDHAND_DISCOUNT = 0.20;
-
+ 
     function setUnits(u) {
       const prevUnits = units;
       units = u;
-
       document.getElementById("btn-metric").classList.toggle("active", u === "metric");
       document.getElementById("btn-imperial").classList.toggle("active", u === "imperial");
       document.getElementById("flight-km-label").textContent = u === "metric" ? "Avg distance (km)" : "Avg distance (miles)";
-
       if (prevUnits !== u) {
         const flightInput = document.getElementById("flight-km");
         flightInput.value = u === "imperial"
           ? Math.round(parseFloat(flightInput.value) * KM_TO_MI)
           : Math.round(parseFloat(flightInput.value) * MI_TO_KM);
       }
-
       if (lastResults) renderResults(lastResults);
     }
-
+ 
     function renderResults({ diet, pkgs, clothing, flights }) {
       const total  = diet + pkgs + clothing + flights;
       const annual = total * 52;
       const unit   = units === "metric" ? "kg" : "lb";
       const factor = units === "metric" ? 1 : KG_TO_LB;
       const avgWeekly = units === "metric" ? 200 : 200 * KG_TO_LB;
-
+ 
       document.getElementById("res-total").textContent    = (total    * factor).toFixed(2);
       document.getElementById("res-annual").textContent   = Math.round(annual  * factor);
       document.getElementById("res-diet").textContent     = (diet     * factor).toFixed(2);
       document.getElementById("res-packages").textContent = (pkgs     * factor).toFixed(2);
       document.getElementById("res-clothing").textContent = (clothing * factor).toFixed(2);
       document.getElementById("res-flights").textContent  = (flights  * factor).toFixed(2);
-
+ 
       document.getElementById("lbl-total").textContent    = `${unit} CO2e / week`;
       document.getElementById("lbl-annual").textContent   = `${unit} CO2e / year`;
       document.getElementById("lbl-diet").textContent     = `${unit} from diet`;
       document.getElementById("lbl-packages").textContent = `${unit} from packages`;
       document.getElementById("lbl-clothing").textContent = `${unit} from clothing`;
       document.getElementById("lbl-flights").textContent  = `${unit} from flights`;
-
+ 
       const pct = Math.round((total / 200) * 100);
       document.getElementById("res-context").textContent =
         `The global average weekly footprint is around ${Math.round(avgWeekly)} ${unit} CO2e. ` +
         `Yours is ${pct}% of that. ` +
         `Your biggest emission source is ${getBiggest({ diet, pkgs, clothing, flights })}.`;
-
+ 
       document.getElementById("result").style.display = "block";
     }
-
+ 
     async function post(body) {
       const res = await fetch("/api/estimate", {
         method: "POST",
@@ -214,14 +211,14 @@
       if (data.error) throw new Error(data.message || data.error);
       return data;
     }
-
+ 
     async function calculate() {
       document.getElementById("err").textContent = "";
       document.getElementById("result").style.display = "none";
       const btn = document.getElementById("calc-btn");
       btn.disabled = true;
       btn.textContent = "Calculating...";
-
+ 
       try {
         const meatMeals    = parseFloat(document.getElementById("meat-meals").value)                || 0;
         const meatType     = document.getElementById("meat-type").value;
@@ -231,64 +228,80 @@
         const clothingUsed = parseFloat(document.getElementById("clothing-secondhand-spend").value) || 0;
         const flightCount  = parseFloat(document.getElementById("flight-count").value)              || 0;
         const flightInput  = parseFloat(document.getElementById("flight-km").value)                 || 0;
-
+ 
         const flightKm        = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
         const meatKgPerWeek   = meatMeals * MEAT_KG_PER_MEAL[meatType];
         const flightKmPerWeek = (flightCount * flightKm) / 52;
         const deliveryDist    = DELIVERY_DISTANCE[deliveryType];
         const clothingNewPerWeek  = clothingNew  / 4.33;
         const clothingUsedPerWeek = clothingUsed / 4.33;
-
+ 
         const [dietData, packageData, clothingNewData, flightData] = await Promise.all([
-
           meatKgPerWeek > 0 ? post({
             emission_factor: { activity_id: MEAT_ACTIVITY[meatType] },
             parameters: { weight: meatKgPerWeek, weight_unit: "kg" }
           }) : Promise.resolve({ co2e: 0 }),
-
+ 
           packages > 0 ? post({
             emission_factor: { activity_id: "freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t" },
             parameters: { weight: packages * 0.5, weight_unit: "kg", distance: deliveryDist, distance_unit: "km" }
           }) : Promise.resolve({ co2e: 0 }),
-
+ 
           clothingNewPerWeek > 0 ? post({
             emission_factor: { activity_id: CLOTHING_NEW_ACTIVITY, region: "US" },
             parameters: { money: clothingNewPerWeek, money_unit: "usd" }
           }) : Promise.resolve({ co2e: 0 }),
-
+ 
           flightKmPerWeek > 0 ? post({
             emission_factor: { activity_id: "passenger_flight-route_type_outside_uk-aircraft_type_na-distance_na-class_economy-rf_included-distance_uplift_included" },
             parameters: { distance: flightKmPerWeek, distance_unit: "km", passengers: 1 }
           }) : Promise.resolve({ co2e: 0 })
         ]);
-
+ 
         const clothingNewCo2e  = clothingNewData.co2e || 0;
         const clothingUsedCo2e = clothingNewPerWeek > 0
           ? (clothingUsedPerWeek / clothingNewPerWeek) * clothingNewCo2e * CLOTHING_SECONDHAND_DISCOUNT
           : clothingUsedPerWeek > 0
             ? clothingUsedPerWeek * 0.12 * CLOTHING_SECONDHAND_DISCOUNT
             : 0;
-
+ 
         lastResults = {
           diet:     dietData.co2e    || 0,
           pkgs:     packageData.co2e || 0,
           clothing: clothingNewCo2e + clothingUsedCo2e,
           flights:  flightData.co2e  || 0
         };
-
+ 
         renderResults(lastResults);
-
+ 
+        /* ── SAVE TO localStorage so data.html can read it ── */
+        const annualResults = {
+          flights:   lastResults.flights  * 52,   // weekly → annual kg CO₂e
+          meatkg:    meatKgPerWeek        * 52,   // kg of meat per year
+          avgt:      (lastResults.diet + lastResults.pkgs + lastResults.clothing + lastResults.flights) * 52,
+          clothitems: Math.round(clothingNew * 12 / 30), // rough items/yr from monthly spend
+          clothco2:  lastResults.clothing * 52,
+          packages:  lastResults.pkgs     * 52
+        };
+        localStorage.setItem("userEmissions", JSON.stringify(annualResults));
+ 
       } catch(e) {
         document.getElementById("err").textContent = "Error: " + e.message;
       }
-
+ 
       btn.disabled = false;
       btn.textContent = "Calculate my weekly footprint";
     }
-
+ 
+    function goToChart() {
+      if (!lastResults) return;
+      window.location.href = "data.html";
+    }
+ 
     function getBiggest(map) {
       return Object.entries(map).sort((a, b) => b[1] - a[1])[0][0];
     }
   </script>
 </body>
 </html>
+ 

@@ -1,0 +1,47 @@
+   * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+    body { 
+    font-family: system-ui, sans-serif; 
+    background: #fff; 
+    color: #111; 
+    padding: 24px;
+ }
+    #ctrls {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 10px; 
+     align-items: center;
+     padding: 0 0 14px; 
+    }
+
+    #ctrls label { 
+    font-size: 13px;
+    color: #666; 
+}
+
+    select, button {
+      font-size: 13px;
+      padding: 4px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff; cursor: pointer;
+    }
+
+    button:hover { 
+    background: #f0f0f0;
+ }
+
+    #hint {
+     font-size: 11px; 
+     color: #bbb;
+     margin-top: 6px;
+     }
+
+    canvas {
+     display: block;
+      width: 100% !important;
+       cursor: crosshair;
+     }
