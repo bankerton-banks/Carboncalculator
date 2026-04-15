@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://use.typekit.net/hdq8wsk.css">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Consumer4ever</title>
@@ -10,7 +11,7 @@
  
   <aside class="sidebar">
     <h1>Enter your weekly habits to see your climate impact.</h1>
-    <h2>your carbon footprint will be estimated off of these inputs and the US average consumption of electricity and fossil fuels.</h2>
+    <p class="subtext">Your carbon footprint will be estimated off of these inputs and the US average consumption of electricity and fossil fuels.</p>
     <div class="toggle-wrap">
       <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
       <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
@@ -21,7 +22,7 @@
  
     <!-- DIET -->
     <div class="card">
-      <h2>Diet</h2>
+      <h2 id="label">Diet</h2>
       <div class="field-row">
         <div class="field">
           <label>Meat meals per week</label>
@@ -42,7 +43,7 @@
  
     <!-- SHOPPING & PACKAGES -->
     <div class="card">
-      <h2>Shopping &amp; packages</h2>
+      <h2 id="label">Shopping + packages</h2>
       <div class="field-row">
         <div class="field">
           <label>Packages ordered per week</label>
@@ -60,23 +61,23 @@
  
     <!-- CLOTHING -->
     <div class="card">
-      <h2>Clothing</h2>
+      <h2 id="label">Clothing</h2>
       <div class="field-row">
         <div class="field">
-          <label>Monthly spend on new clothes (USD)</label>
+          <label>new clothes (USD)</label>
           <input type="number" id="clothing-spend" value="50" min="0" />
         </div>
         <div class="field">
-          <label>Monthly spend on secondhand clothes (USD)</label>
+          <label>secondhand clothes (USD)</label>
           <input type="number" id="clothing-secondhand-spend" value="0" min="0" />
         </div>
       </div>
-      <p class="field-hint">Secondhand clothing has a significantly lower carbon footprint than new.</p>
+      <p class="field-hint">Enter the amount you spend monthly on clothing.</p>
     </div>
  
     <!-- FLIGHTS -->
     <div class="card">
-      <h2>Flights</h2>
+      <h2 id="label">Flights</h2>
       <div class="field-row">
         <div class="field">
           <label>Flights per year</label>

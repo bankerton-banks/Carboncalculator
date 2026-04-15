@@ -3,12 +3,24 @@
   src: url(fonts/yet-grotesk/for-yetgroteskunlicensedtrial-regular.otf);
 }
 
+@font-face {
+  font-family: Ease;
+  src: url(fonts/EaseDisplayTRIAL-Regular.otf);
+}
+
+@font-face {
+  font-family: Pangea ;
+  src: url(fonts/FwTRIAL-PangeaVAR.ttf);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+
 body {
-  font-family: 'Yet Grotesk', sans-serif;
-  color: #111;
-  background: #fff;
+  font-family: "Pangea", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #003012;
   font-size: 1em;
   font-weight: normal;
 }
@@ -64,23 +76,29 @@ body {
 
 /* ── Typography ── */
 h1 {
-  font-size: 1em;
+  font-family: ease;
+  font-size: 3em;
+  line-height: 45px;
   font-weight: normal;
-  line-height: 1.3;
+   color: rgb(52, 151, 103);
+
 }
 
-h2 {
-  font-size: 1em;
-  font-weight: normal;
+
+#label{
+  font-size: 1.5em;
+  color: rgb(52, 151, 103);
+  font-family: ease;
 }
 
 /* ── Toggle ── */
 .toggle-wrap {
   display: flex;
-  background: white;
-  border: 1px solid black;
+  background:rgb(255, 255, 255);;
   padding: 3px;
+  border: 1.5px solid rgb(52, 151, 103);
   gap: 3px;
+  border-radius: 20px;
 }
 
 .toggle-btn {
@@ -94,15 +112,18 @@ h2 {
 }
 
 .toggle-btn.active {
-  background: white;
-  color: black;
-  border: 1px solid black;
+  background: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  border: 1.5px solid rgb(52, 151, 103);
+  background-color: rgb(148,225,187);
+  border-radius: 20px;
 }
 
 /* ── Cards ── */
 .card {
   border: 1px solid #000000;
   padding: 1.25rem 1.5rem;
+  border: 1.5px solid rgb(52, 151, 103);
 }
 
 .card h2 {
@@ -117,8 +138,8 @@ button.go {
   width: 100%;
   padding: 13px;
   background: #ffffff;
-  color: #000000;
-  border: 1px solid #000000;
+  color: #003012;
+  border: 1.5px solid  rgb(52, 151, 103);
   font-size: 1em;
   font-weight: normal;
   cursor: pointer;
@@ -131,6 +152,7 @@ button.go:disabled { opacity: 0.4; cursor: not-allowed; }
 .field-row {
   display: flex;
   gap: 12px;
+  align-items: end;
 }
 
 .field {
@@ -140,29 +162,35 @@ button.go:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
 label {
-  font-size: 0.9em;
-  color: #000000;
+  font-family: "Pangea", sans-serif;
+  font-weight: 400;
   text-transform: uppercase;
+  color: #003012;
+  font-size: 0.8em;
+  font-weight: normal;
 }
 
 input, select {
   width: 100%;
   padding: 9px 12px;
   font-size: 1em;
-  border: 1px solid #000000;
-  background: #fff;
+  border: 1.5px solid rgb(52, 151, 103);
+  background:  rgb(148, 225, 187);
+  height: 44px;
+  box-sizing: border-box;
 }
 
 .field-hint {
   font-size: 1em;
-  color: #000000;
+  color: #003012;
   margin-top: 10px;
+  
 }
 
 /* ── Result ── */
 #result h2 {
   font-size: 1em;
-  color: #ffffff;
+  color: #003012;
   font-weight: normal;
   margin-bottom: 12px;
 }
@@ -189,12 +217,12 @@ input, select {
 .result-item .val {
   font-size: 1em;
   font-weight: 700;
-  color: #111;
+  color: #003012;
 }
 
 .result-item .lbl {
   font-size: 1em;
-  color: #000000;
+  color: #003012;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: 2px;
