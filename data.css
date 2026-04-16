@@ -1,47 +1,304 @@
-   * { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
 }
-    body { 
-    font-family: system-ui, sans-serif; 
-    background: #fff; 
-    color: #111; 
-    padding: 24px;
- }
+
+@font-face {
+   font-family: ease;
+   src: url(fonts/EaseDisplayTRIAL-Regular.otf);
+}
+
+@font-face {
+   font-family: pangea;
+   src: url(fonts/FwTRIAL-PangeaVAR.ttf) format('woff2');
+}
+
+#layout {
+  display: flex;
+  height: 100vh;
+  font-family: pangea;
+}
+
+h1 {
+  font-size: 4em;
+  color: rgb(52, 151, 103);
+  font-family: ease;
+  line-height: 60px;
+}
+
+/* LEFT PANEL */
+#left-panel {
+  width: 35%;
+  min-width: 260px;
+  padding-left: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content:flex-start;
+  align-items: flex-start;
+  height: 100vh;
+   border-right: 1.5px solid rgb(52, 151, 103);
+   padding-right: 40px;
+}
+
+/* RIGHT PANEL */
+#right-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sketch-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#ctrls {
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
+#hint {
+  margin-top: 20px;
+  color: #888;
+  font-size: 12px;
+}
+
+button{
+   background-color: rgb(255, 255, 255);
+   color: #003012;
+   border: 1.5px solid rgb(52, 151, 103);
+   padding: 10px 10px;
+   font-size: 16px;
+   width: 100px;
+   height: 45px;
+   font-family: pangea;
+}
+
+select{
+   background-color: rgb(255, 255, 255);
+   color: #003012;
+   border: 1.5px solid rgb(52, 151, 103);
+   padding: 0px 10px;
+   font-size: 16px;
+   width: 140px;
+   height: 45px;
+   font-family: pangea;
+}
+
+#info-panel {
+  margin-top: 30px;
+  padding-top: 20px;
+  width: 100%;
+}
+
+#countryName {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: rgb(52, 151, 103);
+
+}
+
+#countryMeta {
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #444;
+  font-family: pangea;
+}
+
+#countryBreakdown {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #666;
+  font-family: pangea;
+}
+
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #fff;
+    }
+
+    #layout {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ── LEFT PANEL ── */
+    #left-panel {
+      width: 35%;
+      min-width: 260px;
+      height: 100vh;
+      padding: 40px 40px 40px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      border-right: 1.5px solid rgb(52, 151, 103);
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 3.5vw, 4em);
+      color: rgb(52, 151, 103);
+      font-family: ease, Georgia, serif;
+      line-height: 1.1;
+      margin-bottom: 28px;
+    }
+
     #ctrls {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 10px; 
-     align-items: center;
-     padding: 0 0 14px; 
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    #ctrls label { 
-    font-size: 13px;
-    color: #666; 
-}
+    button {
+      background-color: #fff;
+      color: #003012;
+      border: 1.5px solid rgb(52, 151, 103);
+        border-radius: 100px;
+      padding-top: 10px;
+         padding-bottom: 10px;
+      padding-left: 14px;
+      padding-right: 10px;
+      font-size: 16px;
+      width: 100px;
+      height: 45px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    button:hover { background: rgb(52, 151, 103); color: #fff; }
 
-    select, button {
+    select {
+      background-color: #fff;
+      color: #003012;
+      border: 1.5px solid rgb(52, 151, 103);
+      border-radius: 100px;
+      padding-top: 10px;
+         padding-bottom: 10px;
+      padding-left: 14px;
+      padding-right: 10px;
+      font-size: 16px;
+      width: 120px;
+      height: 45px;
+      cursor: pointer;
+        -webkit-appearance: none;
+  appearance: none;
+      appearance: none;
+       background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-5-6h10z' fill='%23349767'/%3E%3C/svg%3E") no-repeat right 10px center / 14px;
+} 
+
+
+
+    /* ── INFO PANEL ── */
+    #info-panel {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1.5px solid rgb(52, 151, 103);
+      width: 100%;
+      transition: opacity 0.2s;
+      font-family: pangea, Georgia, serif;
+    }
+
+    #info-panel.empty { opacity: 0; }
+
+    #countryName {
+      font-size: 2em;
+      font-family: ease, Georgia, serif;
+      color: rgb(52, 151, 103);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+
+    #countryMeta {
       font-size: 13px;
-      padding: 4px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background: #fff; cursor: pointer;
+      color: #444;
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+      font-family: pangea;
     }
 
-    button:hover { 
-    background: #f0f0f0;
- }
+    #countryBreakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .breakdown-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .breakdown-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+    }
+
+    .breakdown-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .breakdown-bar-bg {
+      flex: 1;
+      height: 5px;
+      background:  rgb(148, 225, 187);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .breakdown-bar-fill {
+      height: 100%;
+      background: rgb(255, 23, 104);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .breakdown-val {
+      font-size: 12px;
+      color: #333;
+      min-width: 38px;
+      text-align: right;
+    }
 
     #hint {
-     font-size: 11px; 
-     color: #bbb;
-     margin-top: 6px;
-     }
+      margin-top: auto;
+      padding-top: 20px;
+      color: #bbb;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
 
-    canvas {
-     display: block;
+    /* ── RIGHT PANEL ── */
+    #right-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #sketch-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #sketch-container canvas {
+      display: block;
       width: 100% !important;
-       cursor: crosshair;
-     }
+      height: 100% !important;
+    }

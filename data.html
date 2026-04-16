@@ -5,54 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Emissions vs USA — Skewed Circles</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-    <link rel="stylesheet" href="data.css">
+  <head>
+  <link rel="stylesheet" href="data.css">
+</head>
+
+  <style>
+  </style>
 </head>
 <body>
 
-<div id="ctrls">
-  <label>metric:
-    <select id="metricSel" style="margin-left:5px;">
-      <option value="total">total (all categories)</option>
-      <option value="flights">flights only (kg CO₂)</option>
-      <option value="clothco2">clothing only (kg CO₂)</option>
-      <option value="packages">e-commerce only (kg CO₂)</option>
-      <option value="meatkg">meat consumption (kg)</option>
-      <option value="avgt">avg total CO₂</option>
-    </select>
-  </label>
-  <button id="replayBtn" style="margin-left:8px;">replay</button>
+<div id="layout">
+
+  <div id="left-panel">
+    <div class="header">
+      <h1>This is how your consumption compares to the rest of the world:</h1>
+    </div>
+
+    <div id="ctrls">
+      <label>
+        <select id="metricSel">
+          <option value="total" class="descript">categories</option>
+          <option value="flights">flights only</option>
+          <option value="clothco2">clothing only</option>
+          <option value="packages">e-commerce only</option>
+          <option value="meatkg">meat consumption</option>
+          <option value="avgt">avg total CO₂</option>
+        </select>
+      </label>
+      <button id="replayBtn">replay</button>
+    </div>
+
+    <div id="info-panel" class="empty">
+      <div id="countryName"></div>
+      <div id="countryMeta"></div>
+      <div id="countryBreakdown"></div>
+    </div>
+
+    <div id="hint">hover a ring to explore</div>
+  </div>
+
+  <div id="right-panel">
+    <div id="sketch-container"></div>
+  </div>
+
 </div>
 
-<div id="sketch-container"></div>
-<p id="hint">hover a circle to see country breakdown</p>
-
 <script>
-  /* ── RAW DATA ────────────────────────────────────────────────────────────
-     Columns: flights (kg CO₂) | meat kg | avg total CO₂ | clothing items
-              clothing CO₂ (kg) | e-commerce CO₂ (kg)
-     Each row is summed for the "total" metric.
-  ───────────────────────────────────────────────────────────────────────── */
+  /* ── RAW DATA ─────────────────────────────────────────────────────────── */
   const RAW = [
-    { name:'China',       flights:80,   meatkg:70.57, avgt:866,  clothitems:28, clothco2:420, packages:22.1 },
-    { name:'India',       flights:17,   meatkg:6.63,  avgt:220,  clothitems:9,  clothco2:135, packages:1.6  },
-    { name:'Russia',      flights:130,  meatkg:81.71, avgt:1229, clothitems:20, clothco2:300, packages:15.8 },
-    { name:'Germany',     flights:420,  meatkg:71.32, avgt:677,  clothitems:45, clothco2:675, packages:30.2 },
-    { name:'UK',          flights:560,  meatkg:84.08, avgt:453,  clothitems:48, clothco2:720, packages:51.0 },
-    { name:'Canada',      flights:480,  meatkg:90.96, avgt:1342, clothitems:42, clothco2:630, packages:31.2 },
-    { name:'Australia',   flights:680,  meatkg:112.34,avgt:1448, clothitems:56, clothco2:840, packages:35.5 },
-    { name:'Qatar',       flights:1800, meatkg:88.81, avgt:4127, clothitems:32, clothco2:480, packages:26.2 },
-    { name:'UAE',         flights:2300, meatkg:83.21, avgt:2013, clothitems:35, clothco2:525, packages:20.2 },
-    { name:'Brazil',      flights:90,   meatkg:98.79, avgt:228,  clothitems:22, clothco2:330, packages:6.7  },
-    { name:'Nigeria',     flights:8,    meatkg:7.61,  avgt:58,   clothitems:6,  clothco2:90,  packages:1.0  },
-    { name:'Indonesia',   flights:45,   meatkg:19.16, avgt:287,  clothitems:14, clothco2:210, packages:7.7  },
-    { name:'USA',         flights:340,  meatkg:112.80,avgt:1420, clothitems:51, clothco2:765, packages:71.2 },
-    { name:'Switzerland', flights:780,  meatkg:66.68, avgt:359,  clothitems:50, clothco2:750, packages:26.1 },
-    { name:'France',      flights:390,  meatkg:84.60, avgt:397,  clothitems:43, clothco2:645, packages:24.7 },
-    { name:'Ireland',     flights:980,  meatkg:90.67, avgt:634,  clothitems:40, clothco2:600, packages:26.5 },
-    { name:'Norway',      flights:820,  meatkg:72.24, avgt:667,  clothitems:32, clothco2:480, packages:30.7 },
+    { name:'China',       flights:80,   meatkg:70.57,  avgt:866,  clothitems:28, clothco2:420, packages:22.1 },
+    { name:'India',       flights:17,   meatkg:6.63,   avgt:220,  clothitems:9,  clothco2:135, packages:1.6  },
+    { name:'Russia',      flights:130,  meatkg:81.71,  avgt:1229, clothitems:20, clothco2:300, packages:15.8 },
+    { name:'Germany',     flights:420,  meatkg:71.32,  avgt:677,  clothitems:45, clothco2:675, packages:30.2 },
+    { name:'UK',          flights:560,  meatkg:84.08,  avgt:453,  clothitems:48, clothco2:720, packages:51.0 },
+    { name:'Canada',      flights:480,  meatkg:90.96,  avgt:1342, clothitems:42, clothco2:630, packages:31.2 },
+    { name:'Australia',   flights:680,  meatkg:112.34, avgt:1448, clothitems:56, clothco2:840, packages:35.5 },
+    { name:'Qatar',       flights:1800, meatkg:88.81,  avgt:4127, clothitems:32, clothco2:480, packages:26.2 },
+    { name:'UAE',         flights:2300, meatkg:83.21,  avgt:2013, clothitems:35, clothco2:525, packages:20.2 },
+    { name:'Brazil',      flights:90,   meatkg:98.79,  avgt:228,  clothitems:22, clothco2:330, packages:6.7  },
+    { name:'Nigeria',     flights:8,    meatkg:7.61,   avgt:58,   clothitems:6,  clothco2:90,  packages:1.0  },
+    { name:'Indonesia',   flights:45,   meatkg:19.16,  avgt:287,  clothitems:14, clothco2:210, packages:7.7  },
+    { name:'USA',         flights:340,  meatkg:112.80, avgt:1420, clothitems:51, clothco2:765, packages:71.2 },
+    { name:'Switzerland', flights:780,  meatkg:66.68,  avgt:359,  clothitems:50, clothco2:750, packages:26.1 },
+    { name:'France',      flights:390,  meatkg:84.60,  avgt:397,  clothitems:43, clothco2:645, packages:24.7 },
+    { name:'Ireland',     flights:980,  meatkg:90.67,  avgt:634,  clothitems:40, clothco2:600, packages:26.5 },
+    { name:'Norway',      flights:820,  meatkg:72.24,  avgt:667,  clothitems:32, clothco2:480, packages:30.7 },
   ];
 
-  /* ── HELPERS ─────────────────────────────────────────────────────────── */
+  const BREAKDOWN_KEYS = [
+    { key: 'flights',    label: 'flights (kg CO₂)' },
+    { key: 'meatkg',     label: 'meat (kg)' },
+    { key: 'avgt',       label: 'avg total CO₂' },
+    { key: 'clothitems', label: 'clothing items' },
+    { key: 'clothco2',   label: 'clothing CO₂ (kg)' },
+    { key: 'packages',   label: 'e-commerce CO₂ (kg)' },
+  ];
+
+  /* max values per key for bar scaling */
+  const KEY_MAXES = {};
+  BREAKDOWN_KEYS.forEach(({ key }) => {
+    KEY_MAXES[key] = Math.max(...RAW.map(d => d[key]));
+  });
+
   function getMetricVal(d, m) {
     if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothitems + d.clothco2 + d.packages;
     return d[m];
@@ -72,15 +106,40 @@
       ratio: v.val / usaVal,
       isUSA: v.name === 'USA',
       normR: Math.sqrt(v.val / maxVal),
-      breakdown: {
-        'flights (kg CO₂)':    v.raw.flights,
-        'meat (kg)':           v.raw.meatkg,
-        'avg total CO₂':       v.raw.avgt,
-        'clothing items':      v.raw.clothitems,
-        'clothing CO₂ (kg)':   v.raw.clothco2,
-        'e-commerce CO₂ (kg)': v.raw.packages,
-      }
+      raw:   v.raw,
     }));
+  }
+
+  /* ── SIDEBAR UPDATE ──────────────────────────────────────────────────── */
+  function updateSidebar(c) {
+    const panel = document.getElementById('info-panel');
+    if (!c) {
+      panel.classList.add('empty');
+      return;
+    }
+    panel.classList.remove('empty');
+
+    const pct = Math.round(c.ratio * 100);
+    document.getElementById('countryName').textContent = c.isUSA ? `${c.name} ★` : c.name;
+    document.getElementById('countryMeta').textContent =
+      `${pct}% of USA  ·  ${Math.round(c.val).toLocaleString()} total`;
+
+    const bd = document.getElementById('countryBreakdown');
+    bd.innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
+      const v    = c.raw[key];
+      const pct  = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
+      const disp = Number.isInteger(v) ? v : v.toFixed(1);
+      return `
+        <div class="breakdown-row">
+          <div class="breakdown-label">${label}</div>
+          <div class="breakdown-bar-wrap">
+            <div class="breakdown-bar-bg">
+              <div class="breakdown-bar-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="breakdown-val">${disp}</div>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   /* ── p5 SKETCH ───────────────────────────────────────────────────────── */
@@ -90,9 +149,8 @@
     let mx = 0, my = 0, hoveredCircle = null;
 
     p.setup = function() {
-      const cont = document.getElementById('sketch-container');
-      W = cont.offsetWidth || 700;
-      H = W * 0.78;
+      W = document.getElementById('sketch-container').offsetWidth;
+      H = window.innerHeight;
       p.createCanvas(W, H).parent('sketch-container');
       p.textFont('system-ui, sans-serif');
       recalc();
@@ -101,8 +159,10 @@
     };
 
     function recalc() {
-      maxR    = Math.min(W, H) * 0.47;
-      anchorX = W * 0.18;   /* left anchor point — adjust to taste */
+      W = document.getElementById('sketch-container').offsetWidth;
+      H = window.innerHeight;
+      maxR    = Math.min(W, H) * 0.44;
+      anchorX = W * 0.5;
       anchorY = H * 0.5;
     }
 
@@ -111,17 +171,14 @@
     }
 
     function getRadius(c) { return c.normR * maxR; }
-
-    /* each circle's centre sits at anchorX + radius so left edge is pinned */
-    function circleCx(c) { return anchorX + getRadius(c); }
+    function circleCx()   { return anchorX; }
 
     function getHovered(px, py) {
       let hit = null;
       for (let i = 0; i < revealed.length; i++) {
-        const c     = revealed[i];
-        const r     = getRadius(c);
-        const ccx   = circleCx(c);
-        const dist  = Math.hypot(px - ccx, py - anchorY);
+        const c    = revealed[i];
+        const r    = getRadius(c);
+        const dist = Math.hypot(px - anchorX, py - anchorY);
         const inner = i > 0 ? getRadius(revealed[i - 1]) : 0;
         if (dist <= r && dist >= inner) hit = c;
       }
@@ -130,19 +187,25 @@
 
     p.mouseMoved = function() {
       mx = p.mouseX; my = p.mouseY;
-      hoveredCircle = getHovered(mx, my);
+      const h = getHovered(mx, my);
+      if (h !== hoveredCircle) {
+        hoveredCircle = h;
+        updateSidebar(hoveredCircle);
+      }
+    };
+
+    p.mouseExited = function() {
+      hoveredCircle = null;
+      updateSidebar(null);
     };
 
     p.draw = function() {
-      const USA_BLUE = '#378ADD';
-      const DEF_STK  = 170;
-      const ease     = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      const ease = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
 
       p.background(255);
 
-      /* grow one circle at a time */
       if (growing) {
-        growT += 0.036;
+        growT += 1;
         if (growT >= 1) {
           revealed.push(circles[growIdx++]);
           growT = 0;
@@ -151,17 +214,16 @@
       }
 
       function drawRing(c, alpha) {
-        const r   = getRadius(c) * alpha;
-        const ccx = anchorX + r;
+        const r = getRadius(c) * alpha;
         p.noFill();
         if (c.isUSA) {
-          p.stroke(USA_BLUE);
-          p.strokeWeight(2.5);
+          p.stroke('#349767');
+          p.strokeWeight(5);
         } else {
-          p.stroke(DEF_STK);
-          p.strokeWeight(1);
+          p.stroke(hoveredCircle && hoveredCircle.name === c.name ? 60 : 170);
+          p.strokeWeight(hoveredCircle && hoveredCircle.name === c.name ? 2.5 : 1.5);
         }
-        p.ellipse(ccx, anchorY, r * 2, r * 2);
+        p.ellipse(anchorX, anchorY, r * 2, r * 2);
       }
 
       revealed.forEach(c => drawRing(c, 1));
@@ -169,69 +231,20 @@
         drawRing(circles[growIdx], ease(growT));
       }
 
-      /* hover tooltip */
-      hoveredCircle = getHovered(mx, my);
+      /* highlight hovered ring */
       if (hoveredCircle) {
-        const c   = hoveredCircle;
-        const r   = getRadius(c);
-        const ccx = circleCx(c);
-        const pct = Math.round(c.ratio * 100);
-
-        const bkLines = Object.entries(c.breakdown).map(
-          ([k, v]) => `${k}: ${Number.isInteger(v) ? v : v.toFixed(1)}`
-        );
-        const boxW = 200;
-        const boxH = 30 + bkLines.length * 15 + 18;
-        let bx = mx + 14;
-        let by = my - 10;
-        if (bx + boxW > W) bx = mx - boxW - 14;
-        if (by + boxH > H) by = H - boxH - 4;
-        if (by < 4) by = 4;
-
-        /* tooltip background */
-        p.noStroke();
-        p.fill(245);
-        p.rect(bx, by, boxW, boxH, 6);
-
-        /* country name */
-        p.fill(c.isUSA ? USA_BLUE : 20);
-        p.textSize(13);
-        p.textAlign(p.LEFT);
-        p.text(c.isUSA ? `${c.name} (baseline)` : c.name, bx + 10, by + 17);
-
-        /* percentage + total */
-        p.fill(100);
-        p.textSize(11);
-        p.text(`${pct}% of USA  |  ${Math.round(c.val).toLocaleString()}`, bx + 10, by + 31);
-
-        /* breakdown lines */
-        bkLines.forEach((line, i) => {
-          p.fill(120);
-          p.textSize(10);
-          p.text(line, bx + 10, by + 46 + i * 15);
-        });
-
-        /* highlight hovered ring */
+        const c = hoveredCircle;
+        const r = getRadius(c);
         p.noFill();
-        p.stroke(c.isUSA ? USA_BLUE : 100);
-        p.strokeWeight(c.isUSA ? 2.5 : 1.5);
-        p.ellipse(ccx, anchorY, r * 2, r * 2);
+        p.stroke(c.isUSA ? '#349767' : '#000');
+        p.strokeWeight(c.isUSA ? 5 : 2.5);
+        p.ellipse(anchorX, anchorY, r * 2, r * 2);
       }
-
-      /* footer hint */
-      p.noStroke();
-      p.fill(190);
-      p.textSize(11);
-      p.textAlign(p.LEFT);
-      p.text('hover a circle to see breakdown', 10, H - 10);
     };
 
     p.windowResized = function() {
-      const cont = document.getElementById('sketch-container');
-      W = cont.offsetWidth || 700;
-      H = W * 0.78;
-      p.resizeCanvas(W, H);
       recalc();
+      p.resizeCanvas(W, H);
       buildCircles();
       startAnim();
     };
@@ -241,6 +254,7 @@
       metricMode = this.value;
       buildCircles();
       startAnim();
+      updateSidebar(null);
     };
   });
 </script>

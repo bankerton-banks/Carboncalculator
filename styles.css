@@ -41,12 +41,13 @@ body {
   position: sticky;
   top: 0;
   height: 100vh;
-  padding: 60px 40px;
+  padding: 40px 40px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 20px;
   align-items: flex-start;
-  border-right: 1px solid #000;
+  border-right: 1.5px solid rgb(52, 151, 103);
   width: 30vw;
 }
 
@@ -55,13 +56,13 @@ body {
   grid-column: 2;
   grid-row: 1;
   padding: 40px;
-  margin-top: 25px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
   gap: 1rem;
   align-content: start;
   width: 70vw;
+  background-color: rgb(148, 225, 187);
 }
 
 /* Output: bottom-right, spans both card columns */
@@ -77,11 +78,23 @@ body {
 /* ── Typography ── */
 h1 {
   font-family: ease;
-  font-size: 3em;
-  line-height: 45px;
+  font-size: 1.5em;
+  line-height: 20px;
   font-weight: normal;
    color: rgb(52, 151, 103);
 
+}
+
+.header{
+  font-size: 4em;
+  color: rgb(52, 151, 103);
+  font-family: ease;
+  line-height: 60px;
+}
+
+.subtext{
+  margin-top: 10px;
+margin-bottom: 40px;
 }
 
 
@@ -99,6 +112,8 @@ h1 {
   border: 1.5px solid rgb(52, 151, 103);
   gap: 3px;
   border-radius: 20px;
+  width: max-content;
+  margin-top: 20px;
 }
 
 .toggle-btn {
@@ -121,9 +136,9 @@ h1 {
 
 /* ── Cards ── */
 .card {
-  border: 1px solid #000000;
   padding: 1.25rem 1.5rem;
   border: 1.5px solid rgb(52, 151, 103);
+background-color: rgb(255, 255, 255);
 }
 
 .card h2 {
@@ -175,9 +190,15 @@ input, select {
   padding: 9px 12px;
   font-size: 1em;
   border: 1.5px solid rgb(52, 151, 103);
-  background:  rgb(148, 225, 187);
+  background:  rgb(255, 255, 255);
   height: 44px;
   box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border: 1.5px solid #003012;
+  border-radius: 0;
 }
 
 .field-hint {
@@ -186,6 +207,18 @@ input, select {
   margin-top: 10px;
   
 }
+
+select option {
+  font-family: "Pangea", sans-serif;
+  background: #ffffff;
+  color: #003012;
+}
+
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-5-6h10z' fill='%23349767'/%3E%3C/svg%3E") no-repeat right 10px center / 14px;
+} 
 
 /* ── Result ── */
 #result h2 {
@@ -197,6 +230,7 @@ input, select {
 
 #result{
     border-radius: 0px;
+    background-color: rgb(52, 151, 103);
 }
 
 
@@ -208,7 +242,7 @@ input, select {
 }
 
 .result-item {
-  background: #ffffff;
+  background: rgb(148, 225, 187);
   border-radius: 0px;
   padding: 10px 14px;
   border: 1px solid #ddf0e6;
@@ -216,26 +250,125 @@ input, select {
 
 .result-item .val {
   font-size: 1em;
-  font-weight: 700;
   color: #003012;
 }
 
 .result-item .lbl {
   font-size: 1em;
   color: #003012;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   margin-top: 2px;
 }
 
 .context {
   font-size: 1em;
-  color: #ffffff;
-  line-height: 1.6;
+  color: #003012;
 }
 
 .err {
   grid-column: 1 / -1;
   color: #c0392b;
   font-size: 1em;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 30px;
+  cursor: pointer;
+  opacity: 0;
+ background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 44'%3E%3Cpath d='M8 14l-5 6h10z' fill='%23349767'/%3E%3Cpath d='M8 30l5-6H3z' fill='%23349767'/%3E%3C/svg%3E") no-repeat center / 16px 44px;
+  transition: opacity 0.2s;
+}
+
+input[type="number"]:hover::-webkit-inner-spin-button,
+input[type="number"]:hover::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+
+
+  .page-wrap {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  
+  .sidebar {
+    grid-column: 1;
+    grid-row: 1;
+    position: static;
+    height: auto;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1.5px solid rgb(52, 151, 103);
+  }
+  
+  .main-content {
+    grid-column: 1;
+    grid-row: 2;}
+  }
+
+  @media (max-width: 768px) {
+  .page-wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+ 
+  .sidebar {
+    position: static;
+    height: auto;
+    width: 100%;
+    padding: 28px 20px;
+    border-right: none;
+    border-bottom: 1.5px solid rgb(52, 151, 103);
+    gap: 16px;
+  }
+  
+  h1 {
+    font-size: 3em;
+    line-height: 40px;
+    margin-bottom: 10px;
+  }
+ 
+  .main-content {
+    width: 100%;
+    padding: 20px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    background-color: rgb(148, 225, 187);
+  }
+ 
+  .card {
+    padding: 1rem;
+  }
+ 
+  /* On very small screens, stack the field-row inputs vertically */
+  .field-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+ 
+  .field {
+    width: 100%;
+  }
+ 
+  input, select {
+    width: 100%;
+  }
+ 
+  button.go {
+    grid-column: 1 / -1;
+  }
+ 
+  #result {
+    grid-column: 1 / -1;
+  }
+ 
+  .result-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
