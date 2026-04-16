@@ -30,7 +30,7 @@
       <button id="replayBtn">replay</button>
     </div>
 
-    <div id="info-panel" class="empty">
+    <div id="info-panel">
       <div id="countryName"></div>
       <div id="countryMeta"></div>
       <div id="countryBreakdown"></div>
@@ -91,7 +91,6 @@
     { key: 'packages',   label: 'e-commerce CO₂ (kg)' },
   ];
 
-  /* max values per key for bar scaling */
   const KEY_MAXES = {};
   BREAKDOWN_KEYS.forEach(({ key }) => {
     KEY_MAXES[key] = Math.max(...RAW.map(d => d[key]));
@@ -121,13 +120,9 @@
     }));
   }
 
-  /* ── SIDEBAR UPDATE ──────────────────────────────────────────────────── */
-  function updateSidebar(c) {
+  /* ── SIDEBAR ──────────────────────────────────────────────────────────── */
+  function renderSidebar(c) {
     const panel = document.getElementById('info-panel');
-    if (!c) {
-      panel.classList.add('empty');
-      return;
-    }
     panel.classList.remove('empty');
 
     const pct = Math.round(c.ratio * 100);
@@ -139,14 +134,14 @@
     const bd = document.getElementById('countryBreakdown');
     bd.innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
       const v    = c.raw[key];
-      const pct  = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
+      const barPct = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
       const disp = Number.isInteger(v) ? v : v.toFixed(1);
       return `
         <div class="breakdown-row">
           <div class="breakdown-label">${label}</div>
           <div class="breakdown-bar-wrap">
             <div class="breakdown-bar-bg">
-              <div class="breakdown-bar-fill" style="width:${pct}%"></div>
+              <div class="breakdown-bar-fill" style="width:${barPct}%"></div>
             </div>
             <div class="breakdown-val">${disp}</div>
           </div>
@@ -154,11 +149,29 @@
     }).join('');
   }
 
+  // show user data by default, fall back to nothing if no user data
+  function showDefault() {
+    const userCircle = circles.find(c => c.isUser);
+    if (userCircle) {
+      renderSidebar(userCircle);
+    } else {
+      document.getElementById('info-panel').classList.add('empty');
+    }
+  }
+
+  function updateSidebar(c) {
+    if (c) {
+      renderSidebar(c);
+    } else {
+      showDefault();
+    }
+  }
+
   /* ── p5 SKETCH ───────────────────────────────────────────────────────── */
   new p5(function(p) {
     let W, H, anchorX, anchorY, maxR;
     let revealed = [], growIdx = 0, growT = 0, growing = true;
-    let mx = 0, my = 0, hoveredCircle = null;
+    let hoveredCircle = null;
 
     p.setup = function() {
       W = document.getElementById('sketch-container').offsetWidth;
@@ -168,12 +181,13 @@
       recalc();
       buildCircles();
       startAnim();
+      showDefault();
     };
 
     function recalc() {
       W = document.getElementById('sketch-container').offsetWidth;
       H = window.innerHeight;
-      maxR    = Math.min(W, H) * 0.44;
+      maxR    = Math.min(W, H) * 0.65;
       anchorX = W * 0.5;
       anchorY = H * 0.5;
     }
@@ -187,9 +201,9 @@
     function getHovered(px, py) {
       let hit = null;
       for (let i = 0; i < revealed.length; i++) {
-        const c    = revealed[i];
-        const r    = getRadius(c);
-        const dist = Math.hypot(px - anchorX, py - anchorY);
+        const c     = revealed[i];
+        const r     = getRadius(c);
+        const dist  = Math.hypot(px - anchorX, py - anchorY);
         const inner = i > 0 ? getRadius(revealed[i - 1]) : 0;
         if (dist <= r && dist >= inner) hit = c;
       }
@@ -197,8 +211,7 @@
     }
 
     p.mouseMoved = function() {
-      mx = p.mouseX; my = p.mouseY;
-      const h = getHovered(mx, my);
+      const h = getHovered(p.mouseX, p.mouseY);
       if (h !== hoveredCircle) {
         hoveredCircle = h;
         updateSidebar(hoveredCircle);
@@ -234,8 +247,9 @@
           p.stroke('#349767');
           p.strokeWeight(5);
         } else {
-          p.stroke(hoveredCircle && hoveredCircle.name === c.name ? 60 : 170);
-          p.strokeWeight(hoveredCircle && hoveredCircle.name === c.name ? 2.5 : 1.5);
+          const isHov = hoveredCircle && hoveredCircle.name === c.name;
+          p.stroke(isHov ? 60 : 170);
+          p.strokeWeight(isHov ? 2.5 : 1.5);
         }
         p.ellipse(anchorX, anchorY, r * 2, r * 2);
       }
@@ -245,7 +259,6 @@
         drawRing(circles[growIdx], ease(growT));
       }
 
-      /* highlight hovered ring */
       if (hoveredCircle) {
         const c = hoveredCircle;
         const r = getRadius(c);
@@ -268,7 +281,7 @@
       metricMode = this.value;
       buildCircles();
       startAnim();
-      updateSidebar(null);
+      updateSidebar(hoveredCircle);
     };
   });
 </script>
