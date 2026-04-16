@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Emissions vs USA — Skewed Circles</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <head>
   <link rel="stylesheet" href="data.css">
-</head>
-
-  <style>
-  </style>
 </head>
 <body>
 
@@ -72,6 +67,21 @@
     { name:'Norway',      flights:820,  meatkg:72.24,  avgt:667,  clothitems:32, clothco2:480, packages:30.7 },
   ];
 
+  /* ── INJECT USER DATA FROM localStorage ──────────────────────────────── */
+  const saved = JSON.parse(localStorage.getItem('userEmissions') || 'null');
+  if (saved) {
+    RAW.push({
+      name:       'You',
+      flights:    saved.flights    || 0,
+      meatkg:     saved.meatkg     || 0,
+      avgt:       saved.avgt       || 0,
+      clothitems: saved.clothitems || 0,
+      clothco2:   saved.clothco2   || 0,
+      packages:   saved.packages   || 0,
+      isUser:     true,
+    });
+  }
+
   const BREAKDOWN_KEYS = [
     { key: 'flights',    label: 'flights (kg CO₂)' },
     { key: 'meatkg',     label: 'meat (kg)' },
@@ -101,12 +111,13 @@
     const usaVal = getMetricVal(RAW.find(d => d.name === 'USA'), metricMode);
     const maxVal = Math.max(...vals.map(v => v.val));
     circles = vals.map(v => ({
-      name:  v.name,
-      val:   v.val,
-      ratio: v.val / usaVal,
-      isUSA: v.name === 'USA',
-      normR: Math.sqrt(v.val / maxVal),
-      raw:   v.raw,
+      name:   v.name,
+      val:    v.val,
+      ratio:  v.val / usaVal,
+      isUSA:  v.name === 'USA',
+      isUser: !!v.raw.isUser,
+      normR:  Math.sqrt(v.val / maxVal),
+      raw:    v.raw,
     }));
   }
 
@@ -120,7 +131,8 @@
     panel.classList.remove('empty');
 
     const pct = Math.round(c.ratio * 100);
-    document.getElementById('countryName').textContent = c.isUSA ? `${c.name} ★` : c.name;
+    document.getElementById('countryName').textContent =
+      c.isUser ? 'You ★' : c.isUSA ? `${c.name} ★` : c.name;
     document.getElementById('countryMeta').textContent =
       `${pct}% of USA  ·  ${Math.round(c.val).toLocaleString()} total`;
 
@@ -171,7 +183,6 @@
     }
 
     function getRadius(c) { return c.normR * maxR; }
-    function circleCx()   { return anchorX; }
 
     function getHovered(px, py) {
       let hit = null;
@@ -216,7 +227,10 @@
       function drawRing(c, alpha) {
         const r = getRadius(c) * alpha;
         p.noFill();
-        if (c.isUSA) {
+        if (c.isUser) {
+          p.stroke('#22c55e');
+          p.strokeWeight(5);
+        } else if (c.isUSA) {
           p.stroke('#349767');
           p.strokeWeight(5);
         } else {
@@ -236,8 +250,8 @@
         const c = hoveredCircle;
         const r = getRadius(c);
         p.noFill();
-        p.stroke(c.isUSA ? '#349767' : '#000');
-        p.strokeWeight(c.isUSA ? 5 : 2.5);
+        p.stroke(c.isUser ? '#22c55e' : c.isUSA ? '#349767' : '#000');
+        p.strokeWeight(c.isUser || c.isUSA ? 5 : 2.5);
         p.ellipse(anchorX, anchorY, r * 2, r * 2);
       }
     };
