@@ -242,7 +242,7 @@ select {
 }
 
 .result-item {
-  background: rgb(148, 225, 187);
+  background: rgb(255, 255, 255);
   border-radius: 0px;
   padding: 10px 14px;
   border: 1px solid #ddf0e6;
@@ -328,9 +328,13 @@ input[type="number"]:hover::-webkit-outer-spin-button {
   }
   
   h1 {
-    font-size: 3em;
-    line-height: 40px;
+    font-size: 1.5em;
+    line-height: 20px;
     margin-bottom: 10px;
+  }
+
+  .header{
+    margin-bottom: 50px;
   }
  
   .main-content {
