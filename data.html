@@ -3,9 +3,239 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Emissions</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <link rel="stylesheet" href="data.css">
+  <title>Your Emissions / Bubble Chart</title>
+  <style>
+    @font-face {
+      font-family: ease;
+      src: url(fonts/EaseDisplayTRIAL-Regular.otf);
+    }
+    @font-face {
+      font-family: pangea;
+      src: url(fonts/FwTRIAL-PangeaVAR.ttf) format('woff2');
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: pangea, system-ui, sans-serif;
+      background: #fff;
+    }
+
+    #layout {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ── LEFT PANEL ── */
+    #left-panel {
+      width: 35%;
+      min-width: 260px;
+      height: 100vh;
+      padding: 40px 40px 40px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      border-right: 1.5px solid rgb(52, 151, 103);
+      overflow: hidden;
+    }
+
+    .header { margin-bottom: 28px; }
+
+    h1 {
+      font-size: clamp(2rem, 3.5vw, 4em);
+      color: rgb(52, 151, 103);
+      font-family: ease, Georgia, serif;
+      line-height: 1.1;
+    }
+
+    #ctrls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+    }
+
+    button {
+      background-color: #fff;
+      color: #003012;
+      border: 1.5px solid rgb(52, 151, 103);
+      border-radius: 100px;
+      padding: 10px 14px;
+      font-size: 16px;
+      width: 100px;
+      height: 45px;
+      cursor: pointer;
+      font-family: pangea, system-ui, sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+    button:hover { background: rgb(52, 151, 103); color: #fff; }
+
+    select {
+      background-color: #fff;
+      color: #003012;
+      border: 1.5px solid rgb(52, 151, 103);
+      border-radius: 100px;
+      padding: 10px 14px;
+      font-size: 16px;
+      width: max-content;
+      height: 45px;
+      cursor: pointer;
+      font-family: pangea, system-ui, sans-serif;
+      -webkit-appearance: none;
+      appearance: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-5-6h10z' fill='%23349767'/%3E%3C/svg%3E") no-repeat right 10px center / 14px #fff;
+    }
+
+    /* ── INFO PANEL ── */
+    #info-panel {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1.5px solid rgb(52, 151, 103);
+      width: 100%;
+      transition: opacity 0.2s;
+      font-family: pangea, system-ui, sans-serif;
+    }
+
+    #info-panel.empty { opacity: 0; pointer-events: none; }
+
+    #countryName {
+      font-size: 2em;
+      font-family: ease, Georgia, serif;
+      color: rgb(52, 151, 103);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+
+    #countryMeta {
+      font-size: 13px;
+      color: #444;
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+      font-family: pangea, system-ui, sans-serif;
+    }
+
+    #countryBreakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .breakdown-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .breakdown-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+    }
+
+    .breakdown-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .breakdown-bar-bg {
+      flex: 1;
+      height: 5px;
+      background: rgb(148, 225, 187);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .breakdown-bar-fill {
+      height: 100%;
+      background: rgb(255, 23, 104);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .breakdown-val {
+      font-size: 12px;
+      color: #333;
+      min-width: 38px;
+      text-align: right;
+    }
+
+    #hint {
+      margin-top: auto;
+      padding-top: 20px;
+      color: #bbb;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── RIGHT PANEL ── */
+    #right-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #sketch-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #sketch-container svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      #layout {
+        flex-direction: column;
+        height: auto;
+      }
+
+      #left-panel {
+        width: 100%;
+        height: auto;
+        min-width: unset;
+        padding: 24px 20px;
+        border-right: none;
+        border-bottom: 1.5px solid rgb(52, 151, 103);
+      }
+
+      h1 {
+        font-size: 2.2em;
+        line-height: 1.1;
+        margin-bottom: 20px;
+      }
+
+      #ctrls { flex-wrap: wrap; gap: 8px; }
+
+      button, select {
+        width: auto;
+        min-width: 110px;
+        height: 44px;
+        font-size: 14px;
+      }
+
+      #info-panel { margin-top: 24px; padding-top: 16px; }
+      #countryName { font-size: 1.6em; }
+
+      #right-panel {
+        width: 100%;
+        height: 60vh;
+        min-height: 300px;
+      }
+
+      html, body { overflow-x: hidden; }
+    }
+  </style>
 </head>
 <body>
 
@@ -17,34 +247,35 @@
     </div>
 
     <div id="ctrls">
-      <label>
-        <select id="metricSel">
-          <option value="total" class="descript">categories</option>
-          <option value="flights">flights only</option>
-          <option value="clothco2">clothing only</option>
-          <option value="packages">e-commerce only</option>
-          <option value="meatkg">meat consumption</option>
-          <option value="avgt">avg total CO₂</option>
-        </select>
-      </label>
+      <select id="metricSel">
+        <option value="total">categories</option>
+        <option value="flights">flights only</option>
+        <option value="clothco2">clothing only</option>
+        <option value="packages">e-commerce only</option>
+        <option value="meatkg">meat consumption</option>
+        <option value="avgt">avg total CO₂</option>
+      </select>
       <button id="replayBtn">replay</button>
     </div>
 
-    <div id="info-panel">
+    <div id="info-panel" class="empty">
       <div id="countryName"></div>
       <div id="countryMeta"></div>
       <div id="countryBreakdown"></div>
     </div>
 
-    <div id="hint">hover a ring to explore</div>
+    <div id="hint">hover a bubble to explore</div>
   </div>
 
   <div id="right-panel">
-    <div id="sketch-container"></div>
+    <div id="sketch-container">
+      <svg id="svg"></svg>
+    </div>
   </div>
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
   /* ── RAW DATA ─────────────────────────────────────────────────────────── */
   const RAW = [
@@ -83,12 +314,12 @@
   }
 
   const BREAKDOWN_KEYS = [
-    { key: 'flights',    label: 'flights (kg CO₂)' },
-    { key: 'meatkg',     label: 'meat (kg)' },
-    { key: 'avgt',       label: 'avg total CO₂' },
-    { key: 'clothitems', label: 'clothing items' },
-    { key: 'clothco2',   label: 'clothing CO₂ (kg)' },
-    { key: 'packages',   label: 'e-commerce CO₂ (kg)' },
+    { key:'flights',    label:'flights (kg CO₂)' },
+    { key:'meatkg',     label:'meat (kg)' },
+    { key:'avgt',       label:'avg total CO₂' },
+    { key:'clothitems', label:'clothing items' },
+    { key:'clothco2',   label:'clothing CO₂ (kg)' },
+    { key:'packages',   label:'e-commerce CO₂ (kg)' },
   ];
 
   const KEY_MAXES = {};
@@ -96,194 +327,148 @@
     KEY_MAXES[key] = Math.max(...RAW.map(d => d[key]));
   });
 
-  function getMetricVal(d, m) {
-    if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothitems + d.clothco2 + d.packages;
+  function metricVal(d, m) {
+    if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothco2 + d.packages;
     return d[m];
   }
 
   let metricMode = 'total';
-  let circles = [];
+  let sim;
 
-  function buildCircles() {
-    const vals = RAW.map(d => ({ name: d.name, val: getMetricVal(d, metricMode), raw: d }));
-    vals.sort((a, b) => a.val - b.val);
-    const usaVal = getMetricVal(RAW.find(d => d.name === 'USA'), metricMode);
-    const maxVal = Math.max(...vals.map(v => v.val));
-    circles = vals.map(v => ({
-      name:   v.name,
-      val:    v.val,
-      ratio:  v.val / usaVal,
-      isUSA:  v.name === 'USA',
-      isUser: !!v.raw.isUser,
-      normR:  Math.sqrt(v.val / maxVal),
-      raw:    v.raw,
+  const svg = d3.select('#svg');
+  let W, H;
+
+  function dims() {
+    const el = document.getElementById('sketch-container');
+    W = el.clientWidth  || 600;
+    H = el.clientHeight || 600;
+    svg.attr('viewBox', `0 0 ${W} ${H}`);
+  }
+
+  /* ── COLOURS ──────────────────────────────────────────────────────────── */
+  const bubbleFill   = 'rgb(148, 225, 187)';
+  const bubbleStroke = 'rgb(52, 151, 103)';
+  const usaFill      = 'rgb(52, 151, 103)';
+  const usaStroke    = 'rgb(30, 100, 65)';
+  const youFill      = '#22c55e';
+  const youStroke    = '#16a34a';
+  const labelDark    = '#003012';
+  const labelLight   = '#fff';
+
+  /* ── BUILD CHART ─────────────────────────────────────────────────────── */
+  function buildChart() {
+    dims();
+    svg.selectAll('*').remove();
+
+    const maxVal = Math.max(...RAW.map(d => metricVal(d, metricMode)));
+    const maxR   = Math.min(W, H) * 0.14;
+    const rScale = d3.scalePow().exponent(0.35).domain([0, maxVal]).range([3, maxR]);
+
+    const nodes = RAW.map(d => ({
+      ...d,
+      val: metricVal(d, metricMode),
+      r:   rScale(metricVal(d, metricMode)),
+      x:   W / 2 + (Math.random() - 0.5) * W * 0.3,
+      y:   H / 2 + (Math.random() - 0.5) * H * 0.3,
     }));
+
+    const g = svg.append('g');
+
+    const nodeG = g.selectAll('g.node')
+      .data(nodes)
+      .join('g')
+      .attr('class', 'node')
+      .style('cursor', 'pointer');
+
+    nodeG.append('circle')
+      .attr('r',            d => d.r)
+      .attr('fill',         d => d.isUser ? youFill   : d.name === 'USA' ? usaFill   : bubbleFill)
+      .attr('stroke',       d => d.isUser ? youStroke : d.name === 'USA' ? usaStroke : bubbleStroke)
+      .attr('stroke-width', d => (d.isUser || d.name === 'USA') ? 2.5 : 1.5)
+      .attr('opacity', 0);
+
+    nodeG.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .style('pointer-events', 'none')
+      .style('font-family', 'pangea, system-ui, sans-serif')
+      .attr('fill',        d => (d.isUser || d.name === 'USA') ? labelLight : labelDark)
+      .attr('font-size',   d => Math.max(9, Math.min(13, d.r * 0.38)))
+      .attr('font-weight', d => (d.isUser || d.name === 'USA') ? '500' : '400')
+      .text(d => d.r > 14 ? (d.isUser ? 'You ★' : d.name) : '');
+
+    nodeG
+      .on('mouseover', function(event, d) {
+        d3.select(this).select('circle').attr('stroke-width', 3.5);
+        renderSidebar(d);
+      })
+      .on('mouseout', function(event, d) {
+        d3.select(this).select('circle')
+          .attr('stroke-width', (d.isUser || d.name === 'USA') ? 2.5 : 1.5);
+        const user = nodes.find(n => n.isUser);
+        if (user) renderSidebar(user); else clearSidebar();
+      });
+
+    if (sim) sim.stop();
+    sim = d3.forceSimulation(nodes)
+      .force('charge',  d3.forceManyBody().strength(5))
+      .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.08))
+      .force('collide', d3.forceCollide(d => d.r + 3).strength(0.9).iterations(3))
+      .force('x',       d3.forceX(W / 2).strength(0.04))
+      .force('y',       d3.forceY(H / 2).strength(0.04))
+      .on('tick', () => {
+        nodeG.attr('transform', d =>
+          `translate(${Math.max(d.r, Math.min(W - d.r, d.x))},${Math.max(d.r, Math.min(H - d.r, d.y))})`
+        );
+      });
+
+    nodeG.select('circle')
+      .transition().duration(600).delay((d, i) => i * 40)
+      .attr('opacity', 1);
+
+    const userNode = nodes.find(n => n.isUser);
+    if (userNode) setTimeout(() => renderSidebar(userNode), 800);
   }
 
   /* ── SIDEBAR ──────────────────────────────────────────────────────────── */
-  function renderSidebar(c) {
+  function renderSidebar(d) {
     const panel = document.getElementById('info-panel');
     panel.classList.remove('empty');
 
-    const pct = Math.round(c.ratio * 100);
-    document.getElementById('countryName').textContent =
-      c.isUser ? 'You ★' : c.isUSA ? `${c.name} ★` : c.name;
-    document.getElementById('countryMeta').textContent =
-      `${pct}% of USA  ·  ${Math.round(c.val).toLocaleString()} total`;
+    const usaVal = metricVal(RAW.find(r => r.name === 'USA'), metricMode);
+    const pct    = Math.round((d.val / usaVal) * 100);
 
-    const bd = document.getElementById('countryBreakdown');
-    bd.innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
-      const v    = c.raw[key];
+    document.getElementById('countryName').textContent =
+      d.isUser ? 'You ★' : d.name === 'USA' ? 'USA ★' : d.name;
+    document.getElementById('countryMeta').textContent =
+      `${pct}% of USA  ·  ${Math.round(d.val).toLocaleString()} total`;
+
+    document.getElementById('countryBreakdown').innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
+      const v      = d[key] || 0;
       const barPct = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
-      const disp = Number.isInteger(v) ? v : v.toFixed(1);
-      return `
-        <div class="breakdown-row">
-          <div class="breakdown-label">${label}</div>
-          <div class="breakdown-bar-wrap">
-            <div class="breakdown-bar-bg">
-              <div class="breakdown-bar-fill" style="width:${barPct}%"></div>
-            </div>
-            <div class="breakdown-val">${disp}</div>
+      const disp   = Number.isInteger(v) ? v : v.toFixed(1);
+      return `<div class="breakdown-row">
+        <div class="breakdown-label">${label}</div>
+        <div class="breakdown-bar-wrap">
+          <div class="breakdown-bar-bg">
+            <div class="breakdown-bar-fill" style="width:${barPct}%"></div>
           </div>
-        </div>`;
+          <div class="breakdown-val">${disp}</div>
+        </div>
+      </div>`;
     }).join('');
   }
 
-  // show user data by default, fall back to nothing if no user data
-  function showDefault() {
-    const userCircle = circles.find(c => c.isUser);
-    if (userCircle) {
-      renderSidebar(userCircle);
-    } else {
-      document.getElementById('info-panel').classList.add('empty');
-    }
+  function clearSidebar() {
+    document.getElementById('info-panel').classList.add('empty');
   }
 
-  function updateSidebar(c) {
-    if (c) {
-      renderSidebar(c);
-    } else {
-      showDefault();
-    }
-  }
+  /* ── INIT ─────────────────────────────────────────────────────────────── */
+  buildChart();
 
-  /* ── p5 SKETCH ───────────────────────────────────────────────────────── */
-  new p5(function(p) {
-    let W, H, anchorX, anchorY, maxR;
-    let revealed = [], growIdx = 0, growT = 0, growing = true;
-    let hoveredCircle = null;
-
-    p.setup = function() {
-      W = document.getElementById('sketch-container').offsetWidth;
-      H = window.innerHeight;
-      p.createCanvas(W, H).parent('sketch-container');
-      p.textFont('system-ui, sans-serif');
-      recalc();
-      buildCircles();
-      startAnim();
-      showDefault();
-    };
-
-    function recalc() {
-      W = document.getElementById('sketch-container').offsetWidth;
-      H = window.innerHeight;
-      maxR    = Math.min(W, H) * 0.5;
-      anchorX = W * 0.5;
-      anchorY = H * 0.5;
-    }
-
-    function startAnim() {
-      revealed = []; growIdx = 0; growT = 0; growing = true;
-    }
-
-    function getRadius(c) { return c.normR * maxR; }
-
-    function getHovered(px, py) {
-      let hit = null;
-      for (let i = 0; i < revealed.length; i++) {
-        const c     = revealed[i];
-        const r     = getRadius(c);
-        const dist  = Math.hypot(px - anchorX, py - anchorY);
-        const inner = i > 0 ? getRadius(revealed[i - 1]) : 0;
-        if (dist <= r && dist >= inner) hit = c;
-      }
-      return hit;
-    }
-
-    p.mouseMoved = function() {
-      const h = getHovered(p.mouseX, p.mouseY);
-      if (h !== hoveredCircle) {
-        hoveredCircle = h;
-        updateSidebar(hoveredCircle);
-      }
-    };
-
-    p.mouseExited = function() {
-      hoveredCircle = null;
-      updateSidebar(null);
-    };
-
-    p.draw = function() {
-      const ease = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-
-      p.background(255);
-
-      if (growing) {
-        growT += 1;
-        if (growT >= 1) {
-          revealed.push(circles[growIdx++]);
-          growT = 0;
-          if (growIdx >= circles.length) growing = false;
-        }
-      }
-
-      function drawRing(c, alpha) {
-        const r = getRadius(c) * alpha;
-        p.noFill();
-        if (c.isUser) {
-          p.stroke('#22c55e');
-          p.strokeWeight(5);
-        } else if (c.isUSA) {
-          p.stroke('#349767');
-          p.strokeWeight(5);
-        } else {
-          const isHov = hoveredCircle && hoveredCircle.name === c.name;
-          p.stroke(isHov ? 60 : 170);
-          p.strokeWeight(isHov ? 2.5 : 1.5);
-        }
-        p.ellipse(anchorX, anchorY, r * 2, r * 2);
-      }
-
-      revealed.forEach(c => drawRing(c, 1));
-      if (growing && growIdx < circles.length) {
-        drawRing(circles[growIdx], ease(growT));
-      }
-
-      if (hoveredCircle) {
-        const c = hoveredCircle;
-        const r = getRadius(c);
-        p.noFill();
-        p.stroke(c.isUser ? '#22c55e' : c.isUSA ? '#349767' : '#000');
-        p.strokeWeight(c.isUser || c.isUSA ? 5 : 2.5);
-        p.ellipse(anchorX, anchorY, r * 2, r * 2);
-      }
-    };
-
-    p.windowResized = function() {
-      recalc();
-      p.resizeCanvas(W, H);
-      buildCircles();
-      startAnim();
-    };
-
-    document.getElementById('replayBtn').onclick  = () => { buildCircles(); startAnim(); };
-    document.getElementById('metricSel').onchange = function() {
-      metricMode = this.value;
-      buildCircles();
-      startAnim();
-      updateSidebar(hoveredCircle);
-    };
-  });
+  document.getElementById('replayBtn').onclick  = buildChart;
+  document.getElementById('metricSel').onchange = function() { metricMode = this.value; buildChart(); };
+  window.addEventListener('resize', () => { if (sim) sim.stop(); buildChart(); });
 </script>
 </body>
 </html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Emissions//circle chart</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <link rel="stylesheet" href="data.css">
+</head>
+<body>
+
+<div id="layout">
+
+  <div id="left-panel">
+    <div class="header">
+      <h1>This is how your consumption compares to the rest of the world:</h1>
+    </div>
+
+    <div id="ctrls">
+      <label>
+        <select id="metricSel">
+          <option value="total" class="descript">categories</option>
+          <option value="flights">flights only</option>
+          <option value="clothco2">clothing only</option>
+          <option value="packages">e-commerce only</option>
+          <option value="meatkg">meat consumption</option>
+          <option value="avgt">avg total CO₂</option>
+        </select>
+      </label>
+      <button id="replayBtn">replay</button>
+    </div>
+
+    <div id="info-panel">
+      <div id="countryName"></div>
+      <div id="countryMeta"></div>
+      <div id="countryBreakdown"></div>
+    </div>
+
+    <div id="hint">hover a ring to explore</div>
+  </div>
+
+  <div id="right-panel">
+    <div id="sketch-container"></div>
+  </div>
+
+</div>
+
+<script>
+  /* ── RAW DATA ─────────────────────────────────────────────────────────── */
+  const RAW = [
+    { name:'China',       flights:80,   meatkg:70.57,  avgt:866,  clothitems:28, clothco2:420, packages:22.1 },
+    { name:'India',       flights:17,   meatkg:6.63,   avgt:220,  clothitems:9,  clothco2:135, packages:1.6  },
+    { name:'Russia',      flights:130,  meatkg:81.71,  avgt:1229, clothitems:20, clothco2:300, packages:15.8 },
+    { name:'Germany',     flights:420,  meatkg:71.32,  avgt:677,  clothitems:45, clothco2:675, packages:30.2 },
+    { name:'UK',          flights:560,  meatkg:84.08,  avgt:453,  clothitems:48, clothco2:720, packages:51.0 },
+    { name:'Canada',      flights:480,  meatkg:90.96,  avgt:1342, clothitems:42, clothco2:630, packages:31.2 },
+    { name:'Australia',   flights:680,  meatkg:112.34, avgt:1448, clothitems:56, clothco2:840, packages:35.5 },
+    { name:'Qatar',       flights:1800, meatkg:88.81,  avgt:4127, clothitems:32, clothco2:480, packages:26.2 },
+    { name:'UAE',         flights:2300, meatkg:83.21,  avgt:2013, clothitems:35, clothco2:525, packages:20.2 },
+    { name:'Brazil',      flights:90,   meatkg:98.79,  avgt:228,  clothitems:22, clothco2:330, packages:6.7  },
+    { name:'Nigeria',     flights:8,    meatkg:7.61,   avgt:58,   clothitems:6,  clothco2:90,  packages:1.0  },
+    { name:'Indonesia',   flights:45,   meatkg:19.16,  avgt:287,  clothitems:14, clothco2:210, packages:7.7  },
+    { name:'USA',         flights:340,  meatkg:112.80, avgt:1420, clothitems:51, clothco2:765, packages:71.2 },
+    { name:'Switzerland', flights:780,  meatkg:66.68,  avgt:359,  clothitems:50, clothco2:750, packages:26.1 },
+    { name:'France',      flights:390,  meatkg:84.60,  avgt:397,  clothitems:43, clothco2:645, packages:24.7 },
+    { name:'Ireland',     flights:980,  meatkg:90.67,  avgt:634,  clothitems:40, clothco2:600, packages:26.5 },
+    { name:'Norway',      flights:820,  meatkg:72.24,  avgt:667,  clothitems:32, clothco2:480, packages:30.7 },
+  ];
+
+  /* ── INJECT USER DATA FROM localStorage ──────────────────────────────── */
+  const saved = JSON.parse(localStorage.getItem('userEmissions') || 'null');
+  if (saved) {
+    RAW.push({
+      name:       'You',
+      flights:    saved.flights    || 0,
+      meatkg:     saved.meatkg     || 0,
+      avgt:       saved.avgt       || 0,
+      clothitems: saved.clothitems || 0,
+      clothco2:   saved.clothco2   || 0,
+      packages:   saved.packages   || 0,
+      isUser:     true,
+    });
+  }
+
+  const BREAKDOWN_KEYS = [
+    { key: 'flights',    label: 'flights (kg CO₂)' },
+    { key: 'meatkg',     label: 'meat (kg)' },
+    { key: 'avgt',       label: 'avg total CO₂' },
+    { key: 'clothitems', label: 'clothing items' },
+    { key: 'clothco2',   label: 'clothing CO₂ (kg)' },
+    { key: 'packages',   label: 'e-commerce CO₂ (kg)' },
+  ];
+
+  const KEY_MAXES = {};
+  BREAKDOWN_KEYS.forEach(({ key }) => {
+    KEY_MAXES[key] = Math.max(...RAW.map(d => d[key]));
+  });
+
+  function getMetricVal(d, m) {
+    if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothitems + d.clothco2 + d.packages;
+    return d[m];
+  }
+
+  let metricMode = 'total';
+  let circles = [];
+
+  function buildCircles() {
+    const vals = RAW.map(d => ({ name: d.name, val: getMetricVal(d, metricMode), raw: d }));
+    vals.sort((a, b) => a.val - b.val);
+    const usaVal = getMetricVal(RAW.find(d => d.name === 'USA'), metricMode);
+    const maxVal = Math.max(...vals.map(v => v.val));
+    circles = vals.map(v => ({
+      name:   v.name,
+      val:    v.val,
+      ratio:  v.val / usaVal,
+      isUSA:  v.name === 'USA',
+      isUser: !!v.raw.isUser,
+      normR:  Math.sqrt(v.val / maxVal),
+      raw:    v.raw,
+    }));
+  }
+
+  /* ── SIDEBAR ──────────────────────────────────────────────────────────── */
+  function renderSidebar(c) {
+    const panel = document.getElementById('info-panel');
+    panel.classList.remove('empty');
+
+    const pct = Math.round(c.ratio * 100);
+    document.getElementById('countryName').textContent =
+      c.isUser ? 'You ★' : c.isUSA ? `${c.name} ★` : c.name;
+    document.getElementById('countryMeta').textContent =
+      `${pct}% of USA  ·  ${Math.round(c.val).toLocaleString()} total`;
+
+    const bd = document.getElementById('countryBreakdown');
+    bd.innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
+      const v    = c.raw[key];
+      const barPct = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
+      const disp = Number.isInteger(v) ? v : v.toFixed(1);
+      return `
+        <div class="breakdown-row">
+          <div class="breakdown-label">${label}</div>
+          <div class="breakdown-bar-wrap">
+            <div class="breakdown-bar-bg">
+              <div class="breakdown-bar-fill" style="width:${barPct}%"></div>
+            </div>
+            <div class="breakdown-val">${disp}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // show user data by default, fall back to nothing if no user data
+  function showDefault() {
+    const userCircle = circles.find(c => c.isUser);
+    if (userCircle) {
+      renderSidebar(userCircle);
+    } else {
+      document.getElementById('info-panel').classList.add('empty');
+    }
+  }
+
+  function updateSidebar(c) {
+    if (c) {
+      renderSidebar(c);
+    } else {
+      showDefault();
+    }
+  }
+
+  /* ── p5 SKETCH ───────────────────────────────────────────────────────── */
+  new p5(function(p) {
+    let W, H, anchorX, anchorY, maxR;
+    let revealed = [], growIdx = 0, growT = 0, growing = true;
+    let hoveredCircle = null;
+
+    p.setup = function() {
+      W = document.getElementById('sketch-container').offsetWidth;
+      H = window.innerHeight;
+      p.createCanvas(W, H).parent('sketch-container');
+      p.textFont('system-ui, sans-serif');
+      recalc();
+      buildCircles();
+      startAnim();
+      showDefault();
+    };
+
+    function recalc() {
+      W = document.getElementById('sketch-container').offsetWidth;
+      H = window.innerHeight;
+      maxR    = Math.min(W, H) * 0.5;
+      anchorX = W * 0.5;
+      anchorY = H * 0.5;
+    }
+
+    function startAnim() {
+      revealed = []; growIdx = 0; growT = 0; growing = true;
+    }
+
+    function getRadius(c) { return c.normR * maxR; }
+
+    function getHovered(px, py) {
+      let hit = null;
+      for (let i = 0; i < revealed.length; i++) {
+        const c     = revealed[i];
+        const r     = getRadius(c);
+        const dist  = Math.hypot(px - anchorX, py - anchorY);
+        const inner = i > 0 ? getRadius(revealed[i - 1]) : 0;
+        if (dist <= r && dist >= inner) hit = c;
+      }
+      return hit;
+    }
+
+    p.mouseMoved = function() {
+      const h = getHovered(p.mouseX, p.mouseY);
+      if (h !== hoveredCircle) {
+        hoveredCircle = h;
+        updateSidebar(hoveredCircle);
+      }
+    };
+
+    p.mouseExited = function() {
+      hoveredCircle = null;
+      updateSidebar(null);
+    };
+
+    p.draw = function() {
+      const ease = t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+
+      p.background(255);
+
+      if (growing) {
+        growT += 1;
+        if (growT >= 1) {
+          revealed.push(circles[growIdx++]);
+          growT = 0;
+          if (growIdx >= circles.length) growing = false;
+        }
+      }
+
+      function drawRing(c, alpha) {
+        const r = getRadius(c) * alpha;
+        p.noFill();
+        if (c.isUser) {
+          p.stroke('#22c55e');
+          p.strokeWeight(5);
+        } else if (c.isUSA) {
+          p.stroke('#349767');
+          p.strokeWeight(5);
+        } else {
+          const isHov = hoveredCircle && hoveredCircle.name === c.name;
+          p.stroke(isHov ? 60 : 170);
+          p.strokeWeight(isHov ? 2.5 : 1.5);
+        }
+        p.ellipse(anchorX, anchorY, r * 2, r * 2);
+      }
+
+      revealed.forEach(c => drawRing(c, 1));
+      if (growing && growIdx < circles.length) {
+        drawRing(circles[growIdx], ease(growT));
+      }
+
+      if (hoveredCircle) {
+        const c = hoveredCircle;
+        const r = getRadius(c);
+        p.noFill();
+        p.stroke(c.isUser ? '#22c55e' : c.isUSA ? '#349767' : '#000');
+        p.strokeWeight(c.isUser || c.isUSA ? 5 : 2.5);
+        p.ellipse(anchorX, anchorY, r * 2, r * 2);
+      }
+    };
+
+    p.windowResized = function() {
+      recalc();
+      p.resizeCanvas(W, H);
+      buildCircles();
+      startAnim();
+    };
+
+    document.getElementById('replayBtn').onclick  = () => { buildCircles(); startAnim(); };
+    document.getElementById('metricSel').onchange = function() {
+      metricMode = this.value;
+      buildCircles();
+      startAnim();
+      updateSidebar(hoveredCircle);
+    };
+  });
+</script>
+</body>
+</html>

@@ -79,7 +79,7 @@ body {
 h1 {
   font-family: ease;
   font-size: 1.5em;
-  line-height: 20px;
+  line-height: 25px;
   font-weight: normal;
    color: rgb(52, 151, 103);
 
@@ -111,7 +111,7 @@ margin-bottom: 40px;
   padding: 3px;
   border: 1.5px solid rgb(52, 151, 103);
   gap: 3px;
-  border-radius: 20px;
+  border-radius: 0px;
   width: max-content;
   margin-top: 20px;
 }
@@ -131,7 +131,7 @@ margin-bottom: 40px;
   color: rgb(0, 0, 0);
   border: 1.5px solid rgb(52, 151, 103);
   background-color: rgb(148,225,187);
-  border-radius: 20px;
+  border-radius: 00px;
 }
 
 /* ── Cards ── */
@@ -230,7 +230,8 @@ select {
 
 #result{
     border-radius: 0px;
-    background-color: rgb(52, 151, 103);
+    border: solid 1.5px rgb(52, 151, 103);
+    background-color: rgb(255, 255, 255);
 }
 
 
@@ -245,23 +246,23 @@ select {
   background: rgb(255, 255, 255);
   border-radius: 0px;
   padding: 10px 14px;
-  border: 1px solid #ddf0e6;
+  border: 1px solid rgb(52, 151, 103);
 }
 
 .result-item .val {
   font-size: 1em;
-  color: #003012;
+  color: rgb(255, 255, 255);
 }
 
 .result-item .lbl {
   font-size: 1em;
-  color: #003012;
+  color: rgb(255, 255, 255);
   margin-top: 2px;
 }
 
 .context {
   font-size: 1em;
-  color: #003012;
+  color: rgb(255, 255, 255);
 }
 
 .err {
