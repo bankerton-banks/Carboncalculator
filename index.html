@@ -376,9 +376,9 @@ const RAW = [
 
 const COUNTRY_COLORS = {
   China:'#ed86ae', India:'#0d479b', Russia:'#ffb000', Germany:'#e81c43',
-  UK:'#f1be41', Canada:'#396650', Australia:'#001ef4', Brazil:'#e84221',
-  Nigeria:'#8d311a', Indonesia:'#4a7d46', Switzerland:'#824a77', France:'#7217c1',
-  Ireland:'#3364a7', Norway:'#b4cbe3', Qatar:'#dd66b5', UAE:'#f4f7b0',
+  UK:'#f1be41', Canada:'#bab0f4', Australia:'#001ef4', Brazil:'#e84221',
+  Nigeria:'#8d311a', Indonesia:'#05c4b5', Switzerland:'#824a77', France:'#7217c1',
+  Ireland:'#3364a7', Norway:'#b4cbe3', Qatar:'#dd66b5', UAE:'#9b3700',
   USA:'rgb(52, 151, 103)',
 };
 
@@ -391,7 +391,7 @@ const BREAKDOWN_KEYS = [
   { key:'packages',   label:'e-commerce CO₂ (kg)' },
 ];
 
-function getColor(d) { return d.isUser ? '#22c55e' : (COUNTRY_COLORS[d.name] || '#ccc'); }
+function getColor(d) { return d.isUser ? 'rgb(148, 225, 187)' : (COUNTRY_COLORS[d.name] || '#ccc'); }
 function getStroke(d) { return d.isUser ? '#16a34a' : d3.color(COUNTRY_COLORS[d.name] || '#ccc').darker(0.6).toString(); }
 function metricVal(d, m) {
   if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothco2 + d.packages;
