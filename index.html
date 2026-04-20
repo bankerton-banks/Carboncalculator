@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consumer4ever — CO₂ Visualized</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://use.typekit.net/hdq8wsk.css">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Consumer4ever</title>
 </head>
-<body class="page-wrap">
- 
+<body>
+
+<!-- ══════════════════════════════
+     SCREEN 1 — CALCULATOR
+══════════════════════════════ -->
+<div id="screen-calc">
+
   <aside class="sidebar">
-    <h1 class="header">Co2 Emmisions: Vizulaized</h1>
-    <div class="baby">
-    <h1>Enter your weekly habits to see your climate impact.</h1>
-    <p class="subtext">Your carbon footprint will be estimated off of these inputs and the US average consumption of electricity and fossil fuels.</p>
-      <div class="toggle-wrap">
-      <button class="toggle-btn active" id="btn-metric" onclick="setUnits('metric')">Metric</button>
-      <button class="toggle-btn" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+      <div class="header">CO2 Emissions:<br>Visualized</div>
+      <div>
+
+         <h1 style="margin-top:24px;">Enter your weekly habits to see your climate impact.</h1>
+         <p class="subtext">Your carbon footprint will be estimated from these inputs plus the US average consumption of electricity and fossil fuels.</p>
+          <div class="toggle-wrap">
+            <button class="toggle-btn" id="btn-metric"   onclick="setUnits('metric')">Metric</button>
+            <button class="toggle-btn active" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+         </div>
     </div>
-  </div>
   </aside>
- 
+
   <div class="main-content">
- 
+
     <!-- DIET -->
     <div class="card">
-      <h2 id="label">Diet</h2>
+      <h2>Diet</h2>
       <div class="field-row">
         <div class="field">
           <label>Meat meals per week</label>
@@ -43,13 +48,13 @@
       </div>
       <p class="field-hint">Select the meat type you consume most often.</p>
     </div>
- 
-    <!-- SHOPPING & PACKAGES -->
+
+    <!-- SHOPPING -->
     <div class="card">
-      <h2 id="label">Shopping + packages</h2>
+      <h2>Shopping + Packages</h2>
       <div class="field-row">
         <div class="field">
-          <label>Packages ordered per week</label>
+          <label>Packages per week</label>
           <input type="number" id="packages" value="2" min="0" />
         </div>
         <div class="field">
@@ -61,26 +66,26 @@
         </div>
       </div>
     </div>
- 
+
     <!-- CLOTHING -->
     <div class="card">
-      <h2 id="label">Clothing</h2>
+      <h2>Clothing</h2>
       <div class="field-row">
         <div class="field">
-          <label>new clothes (USD)</label>
+          <label>New clothes (USD/mo)</label>
           <input type="number" id="clothing-spend" value="50" min="0" />
         </div>
         <div class="field">
-          <label>secondhand clothes (USD)</label>
+          <label>Secondhand (USD/mo)</label>
           <input type="number" id="clothing-secondhand-spend" value="0" min="0" />
         </div>
       </div>
-      <p class="field-hint">Enter the amount you spend monthly on clothing.</p>
+      <p class="field-hint">Enter your monthly spend on clothing.</p>
     </div>
- 
+
     <!-- FLIGHTS -->
     <div class="card">
-      <h2 id="label">Flights</h2>
+      <h2>Flights</h2>
       <div class="field-row">
         <div class="field">
           <label>Flights per year</label>
@@ -92,220 +97,392 @@
         </div>
       </div>
     </div>
- 
+
     <div class="err" id="err"></div>
+
     <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
- 
+
+    <!-- RESULTS (appears inline after calculation) -->
     <div id="result">
       <h2>Your estimated weekly carbon footprint</h2>
       <div class="result-grid">
-        <div class="result-item">
-          <div class="val" id="res-total">—</div>
-          <div class="lbl" id="lbl-total">kg CO₂e / week</div>
-        </div>
-        <div class="result-item">
-          <div class="val" id="res-annual">—</div>
-          <div class="lbl" id="lbl-annual">kg CO₂e / year</div>
-        </div>
-        <div class="result-item">
-          <div class="val" id="res-diet">—</div>
-          <div class="lbl" id="lbl-diet">kg from diet</div>
-        </div>
-        <div class="result-item">
-          <div class="val" id="res-packages">—</div>
-          <div class="lbl" id="lbl-packages">kg from packages</div>
-        </div>
-        <div class="result-item">
-          <div class="val" id="res-clothing">—</div>
-          <div class="lbl" id="lbl-clothing">kg from clothing</div>
-        </div>
-        <div class="result-item">
-          <div class="val" id="res-flights">—</div>
-          <div class="lbl" id="lbl-flights">kg from flights</div>
-        </div>
+        <div class="result-item"><div class="val" id="res-total">—</div><div class="lbl" id="lbl-total">kg CO₂e / week</div></div>
+        <div class="result-item"><div class="val" id="res-annual">—</div><div class="lbl" id="lbl-annual">kg CO₂e / year</div></div>
+        <div class="result-item"><div class="val" id="res-diet">—</div><div class="lbl" id="lbl-diet">kg from diet</div></div>
+        <div class="result-item"><div class="val" id="res-packages">—</div><div class="lbl" id="lbl-packages">kg from packages</div></div>
+        <div class="result-item"><div class="val" id="res-clothing">—</div><div class="lbl" id="lbl-clothing">kg from clothing</div></div>
+        <div class="result-item"><div class="val" id="res-flights">—</div><div class="lbl" id="lbl-flights">kg from flights</div></div>
       </div>
-      <div class="context" id="res-context"></div>
- 
-      <!-- ── NEW: button to go to the chart page ── -->
-      <button class="go" id="chart-btn" onclick="goToChart()" style="margin-top:1.5rem;">
-        See how you compare globally →
-      </button>
+      <p class="context" id="res-context"></p>
+      <button class="go" style="margin-top:1rem;" onclick="showChart()">See how you compare globally →</button>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /screen-calc -->
+
+
+<!-- ══════════════════════════════
+     SCREEN 2 — BUBBLE CHART
+══════════════════════════════ -->
+<div id="screen-chart">
+
+  <div id="chart-left">
+    <button id="back-btn" onclick="showCalc()">← back</button>
+    <h1>This is how your consumption compares to the rest of the world:</h1>
+
+    <div id="chart-ctrls">
+      <select id="metricSel">
+        <option value="total">all categories</option>
+        <option value="flights">flights only</option>
+        <option value="clothco2">clothing only</option>
+        <option value="packages">e-commerce only</option>
+        <option value="meatkg">meat consumption</option>
+        <option value="avgt">avg total CO₂</option>
+      </select>
+      <button id="replayBtn">replay</button>
+    </div>
+
+    <div id="info-panel" class="empty">
+      <div id="countryName"></div>
+      <div id="countryMeta"></div>
+      <div id="countryBreakdown"></div>
+    </div>
+
+    <div id="hint">hover a bubble to explore</div>
+  </div>
+
+  <div id="chart-right">
+    <div id="sketch-container">
+      <svg id="chart-svg"></svg>
     </div>
   </div>
- 
-  <script>
-    let units = "imperial";
-    let lastResults = null;
- 
-    const KM_TO_MI = 0.621371;
-    const MI_TO_KM = 1.60934;
-    const KG_TO_LB = 2.20462;
- 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("flight-km-label").textContent = "Avg distance (miles)";
-      document.getElementById("btn-imperial").classList.add("active");
-      document.getElementById("btn-metric").classList.remove("active");
-      document.getElementById("result").style.display = "none";
-    });
- 
-    const MEAT_KG_PER_MEAL = { beef: 0.25, pork: 0.20, chicken: 0.15, lamb: 0.25 };
-    const MEAT_ACTIVITY = {
-      beef:    "food-type_beef_roast_beef_roasted_baked",
-      pork:    "food-type_pork_cured_ham_roasted_baked",
-      chicken: "food-type_chicken_roasted_baked",
-      lamb:    "food-type_lamb_roasted_baked"
+
+</div><!-- /screen-chart -->
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════
+   CALCULATOR LOGIC
+══════════════════════════════════════════════════════ */
+let units = 'imperial';
+let lastResults = null;
+
+const KM_TO_MI = 0.621371;
+const MI_TO_KM = 1.60934;
+const KG_TO_LB = 2.20462;
+
+const MEAT_KG_PER_MEAL  = { beef: 0.25, pork: 0.20, chicken: 0.15, lamb: 0.25 };
+const MEAT_ACTIVITY     = {
+  beef:    'food-type_beef_roast_beef_roasted_baked',
+  pork:    'food-type_pork_cured_ham_roasted_baked',
+  chicken: 'food-type_chicken_roasted_baked',
+  lamb:    'food-type_lamb_roasted_baked'
+};
+const DELIVERY_DISTANCE = { standard: 50, express: 100 };
+const CLOTHING_NEW_ACTIVITY = 'consumer_goods-type_apparel_accessories_and_other_apparel';
+const CLOTHING_SECONDHAND_DISCOUNT = 0.20;
+
+function setUnits(u) {
+  const prev = units;
+  units = u;
+  document.getElementById('btn-metric').classList.toggle('active', u === 'metric');
+  document.getElementById('btn-imperial').classList.toggle('active', u === 'imperial');
+  document.getElementById('flight-km-label').textContent = u === 'metric' ? 'Avg distance (km)' : 'Avg distance (miles)';
+  if (prev !== u) {
+    const fi = document.getElementById('flight-km');
+    fi.value = u === 'imperial' ? Math.round(parseFloat(fi.value) * KM_TO_MI) : Math.round(parseFloat(fi.value) * MI_TO_KM);
+  }
+  if (lastResults) renderResults(lastResults);
+}
+
+function renderResults({ diet, pkgs, clothing, flights }) {
+  const total  = diet + pkgs + clothing + flights;
+  const annual = total * 52;
+  const factor = units === 'metric' ? 1 : KG_TO_LB;
+  const unit   = units === 'metric' ? 'kg' : 'lb';
+  const avgW   = units === 'metric' ? 200 : 200 * KG_TO_LB;
+  const pct    = Math.round((total / 200) * 100);
+
+  document.getElementById('res-total').textContent    = (total    * factor).toFixed(2);
+  document.getElementById('res-annual').textContent   = Math.round(annual  * factor);
+  document.getElementById('res-diet').textContent     = (diet     * factor).toFixed(2);
+  document.getElementById('res-packages').textContent = (pkgs     * factor).toFixed(2);
+  document.getElementById('res-clothing').textContent = (clothing * factor).toFixed(2);
+  document.getElementById('res-flights').textContent  = (flights  * factor).toFixed(2);
+
+  document.getElementById('lbl-total').textContent    = `${unit} CO₂e / week`;
+  document.getElementById('lbl-annual').textContent   = `${unit} CO₂e / year`;
+  document.getElementById('lbl-diet').textContent     = `${unit} from diet`;
+  document.getElementById('lbl-packages').textContent = `${unit} from packages`;
+  document.getElementById('lbl-clothing').textContent = `${unit} from clothing`;
+  document.getElementById('lbl-flights').textContent  = `${unit} from flights`;
+
+  const biggest = Object.entries({ diet, pkgs, clothing, flights }).sort((a, b) => b[1] - a[1])[0][0];
+  document.getElementById('res-context').textContent =
+    `The global average weekly footprint is around ${Math.round(avgW)} ${unit} CO₂e. ` +
+    `Yours is ${pct}% of that. Your biggest source is ${biggest}.`;
+
+  document.getElementById('result').style.display = 'block';
+}
+
+async function post(body) {
+  const res = await fetch('/api/estimate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.message || data.error);
+  return data;
+}
+
+async function calculate() {
+  document.getElementById('err').textContent = '';
+  document.getElementById('result').style.display = 'none';
+  const btn = document.getElementById('calc-btn');
+  btn.disabled = true;
+  btn.textContent = 'Calculating…';
+
+  try {
+    const meatMeals    = parseFloat(document.getElementById('meat-meals').value)                || 0;
+    const meatType     = document.getElementById('meat-type').value;
+    const packages     = parseFloat(document.getElementById('packages').value)                  || 0;
+    const deliveryType = document.getElementById('delivery-type').value;
+    const clothingNew  = parseFloat(document.getElementById('clothing-spend').value)            || 0;
+    const clothingUsed = parseFloat(document.getElementById('clothing-secondhand-spend').value) || 0;
+    const flightCount  = parseFloat(document.getElementById('flight-count').value)              || 0;
+    const flightInput  = parseFloat(document.getElementById('flight-km').value)                 || 0;
+
+    const flightKm        = units === 'imperial' ? flightInput * MI_TO_KM : flightInput;
+    const meatKgPerWeek   = meatMeals * MEAT_KG_PER_MEAL[meatType];
+    const flightKmPerWeek = (flightCount * flightKm) / 52;
+    const deliveryDist    = DELIVERY_DISTANCE[deliveryType];
+    const clothingNewPW   = clothingNew  / 4.33;
+    const clothingUsedPW  = clothingUsed / 4.33;
+
+    const [dietData, packageData, clothingNewData, flightData] = await Promise.all([
+      meatKgPerWeek > 0 ? post({ emission_factor: { activity_id: MEAT_ACTIVITY[meatType] }, parameters: { weight: meatKgPerWeek, weight_unit: 'kg' } }) : Promise.resolve({ co2e: 0 }),
+      packages > 0 ? post({ emission_factor: { activity_id: 'freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t' }, parameters: { weight: packages * 0.5, weight_unit: 'kg', distance: deliveryDist, distance_unit: 'km' } }) : Promise.resolve({ co2e: 0 }),
+      clothingNewPW > 0 ? post({ emission_factor: { activity_id: CLOTHING_NEW_ACTIVITY, region: 'US' }, parameters: { money: clothingNewPW, money_unit: 'usd' } }) : Promise.resolve({ co2e: 0 }),
+      flightKmPerWeek > 0 ? post({ emission_factor: { activity_id: 'passenger_flight-route_type_outside_uk-aircraft_type_na-distance_na-class_economy-rf_included-distance_uplift_included' }, parameters: { distance: flightKmPerWeek, distance_unit: 'km', passengers: 1 } }) : Promise.resolve({ co2e: 0 })
+    ]);
+
+    const clothingNewCo2e  = clothingNewData.co2e || 0;
+    const clothingUsedCo2e = clothingNewPW > 0
+      ? (clothingUsedPW / clothingNewPW) * clothingNewCo2e * CLOTHING_SECONDHAND_DISCOUNT
+      : clothingUsedPW > 0 ? clothingUsedPW * 0.12 * CLOTHING_SECONDHAND_DISCOUNT : 0;
+
+    lastResults = {
+      diet:     dietData.co2e    || 0,
+      pkgs:     packageData.co2e || 0,
+      clothing: clothingNewCo2e + clothingUsedCo2e,
+      flights:  flightData.co2e  || 0
     };
- 
-    const DELIVERY_DISTANCE = { standard: 50, express: 100 };
-    const CLOTHING_NEW_ACTIVITY = "consumer_goods-type_apparel_accessories_and_other_apparel";
-    const CLOTHING_SECONDHAND_DISCOUNT = 0.20;
- 
-    function setUnits(u) {
-      const prevUnits = units;
-      units = u;
-      document.getElementById("btn-metric").classList.toggle("active", u === "metric");
-      document.getElementById("btn-imperial").classList.toggle("active", u === "imperial");
-      document.getElementById("flight-km-label").textContent = u === "metric" ? "Avg distance (km)" : "Avg distance (miles)";
-      if (prevUnits !== u) {
-        const flightInput = document.getElementById("flight-km");
-        flightInput.value = u === "imperial"
-          ? Math.round(parseFloat(flightInput.value) * KM_TO_MI)
-          : Math.round(parseFloat(flightInput.value) * MI_TO_KM);
-      }
-      if (lastResults) renderResults(lastResults);
-    }
- 
-    function renderResults({ diet, pkgs, clothing, flights }) {
-      const total  = diet + pkgs + clothing + flights;
-      const annual = total * 52;
-      const unit   = units === "metric" ? "kg" : "lb";
-      const factor = units === "metric" ? 1 : KG_TO_LB;
-      const avgWeekly = units === "metric" ? 200 : 200 * KG_TO_LB;
- 
-      document.getElementById("res-total").textContent    = (total    * factor).toFixed(2);
-      document.getElementById("res-annual").textContent   = Math.round(annual  * factor);
-      document.getElementById("res-diet").textContent     = (diet     * factor).toFixed(2);
-      document.getElementById("res-packages").textContent = (pkgs     * factor).toFixed(2);
-      document.getElementById("res-clothing").textContent = (clothing * factor).toFixed(2);
-      document.getElementById("res-flights").textContent  = (flights  * factor).toFixed(2);
- 
-      document.getElementById("lbl-total").textContent    = `${unit} CO2e / week`;
-      document.getElementById("lbl-annual").textContent   = `${unit} CO2e / year`;
-      document.getElementById("lbl-diet").textContent     = `${unit} from diet`;
-      document.getElementById("lbl-packages").textContent = `${unit} from packages`;
-      document.getElementById("lbl-clothing").textContent = `${unit} from clothing`;
-      document.getElementById("lbl-flights").textContent  = `${unit} from flights`;
- 
-      const pct = Math.round((total / 200) * 100);
-      document.getElementById("res-context").textContent =
-        `The global average weekly footprint is around ${Math.round(avgWeekly)} ${unit} CO2e. ` +
-        `Yours is ${pct}% of that. ` +
-        `Your biggest emission source is ${getBiggest({ diet, pkgs, clothing, flights })}.`;
- 
-      document.getElementById("result").style.display = "block";
-    }
- 
-    async function post(body) {
-      const res = await fetch("/api/estimate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.message || data.error);
-      return data;
-    }
- 
-    async function calculate() {
-      document.getElementById("err").textContent = "";
-      document.getElementById("result").style.display = "none";
-      const btn = document.getElementById("calc-btn");
-      btn.disabled = true;
-      btn.textContent = "Calculating...";
- 
-      try {
-        const meatMeals    = parseFloat(document.getElementById("meat-meals").value)                || 0;
-        const meatType     = document.getElementById("meat-type").value;
-        const packages     = parseFloat(document.getElementById("packages").value)                  || 0;
-        const deliveryType = document.getElementById("delivery-type").value;
-        const clothingNew  = parseFloat(document.getElementById("clothing-spend").value)            || 0;
-        const clothingUsed = parseFloat(document.getElementById("clothing-secondhand-spend").value) || 0;
-        const flightCount  = parseFloat(document.getElementById("flight-count").value)              || 0;
-        const flightInput  = parseFloat(document.getElementById("flight-km").value)                 || 0;
- 
-        const flightKm        = units === "imperial" ? flightInput * MI_TO_KM : flightInput;
-        const meatKgPerWeek   = meatMeals * MEAT_KG_PER_MEAL[meatType];
-        const flightKmPerWeek = (flightCount * flightKm) / 52;
-        const deliveryDist    = DELIVERY_DISTANCE[deliveryType];
-        const clothingNewPerWeek  = clothingNew  / 4.33;
-        const clothingUsedPerWeek = clothingUsed / 4.33;
- 
-        const [dietData, packageData, clothingNewData, flightData] = await Promise.all([
-          meatKgPerWeek > 0 ? post({
-            emission_factor: { activity_id: MEAT_ACTIVITY[meatType] },
-            parameters: { weight: meatKgPerWeek, weight_unit: "kg" }
-          }) : Promise.resolve({ co2e: 0 }),
- 
-          packages > 0 ? post({
-            emission_factor: { activity_id: "freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t" },
-            parameters: { weight: packages * 0.5, weight_unit: "kg", distance: deliveryDist, distance_unit: "km" }
-          }) : Promise.resolve({ co2e: 0 }),
- 
-          clothingNewPerWeek > 0 ? post({
-            emission_factor: { activity_id: CLOTHING_NEW_ACTIVITY, region: "US" },
-            parameters: { money: clothingNewPerWeek, money_unit: "usd" }
-          }) : Promise.resolve({ co2e: 0 }),
- 
-          flightKmPerWeek > 0 ? post({
-            emission_factor: { activity_id: "passenger_flight-route_type_outside_uk-aircraft_type_na-distance_na-class_economy-rf_included-distance_uplift_included" },
-            parameters: { distance: flightKmPerWeek, distance_unit: "km", passengers: 1 }
-          }) : Promise.resolve({ co2e: 0 })
-        ]);
- 
-        const clothingNewCo2e  = clothingNewData.co2e || 0;
-        const clothingUsedCo2e = clothingNewPerWeek > 0
-          ? (clothingUsedPerWeek / clothingNewPerWeek) * clothingNewCo2e * CLOTHING_SECONDHAND_DISCOUNT
-          : clothingUsedPerWeek > 0
-            ? clothingUsedPerWeek * 0.12 * CLOTHING_SECONDHAND_DISCOUNT
-            : 0;
- 
-        lastResults = {
-          diet:     dietData.co2e    || 0,
-          pkgs:     packageData.co2e || 0,
-          clothing: clothingNewCo2e + clothingUsedCo2e,
-          flights:  flightData.co2e  || 0
-        };
- 
-        renderResults(lastResults);
- 
-        /* ── SAVE TO localStorage so data.html can read it ── */
-        const annualResults = {
-          flights:   lastResults.flights  * 52,   // weekly → annual kg CO₂e
-          meatkg:    meatKgPerWeek        * 52,   // kg of meat per year
-          avgt:      (lastResults.diet + lastResults.pkgs + lastResults.clothing + lastResults.flights) * 52,
-          clothitems: Math.round(clothingNew * 12 / 30), // rough items/yr from monthly spend
-          clothco2:  lastResults.clothing * 52,
-          packages:  lastResults.pkgs     * 52
-        };
-        localStorage.setItem("userEmissions", JSON.stringify(annualResults));
- 
-      } catch(e) {
-        document.getElementById("err").textContent = "Error: " + e.message;
-      }
- 
-      btn.disabled = false;
-      btn.textContent = "Calculate my weekly footprint";
-    }
- 
-    function goToChart() {
-      if (!lastResults) return;
-      window.location.href = "data.html";
-    }
- 
-    function getBiggest(map) {
-      return Object.entries(map).sort((a, b) => b[1] - a[1])[0][0];
-    }
-  </script>
+
+    renderResults(lastResults);
+
+    /* store for bubble chart */
+    userEmissionsData = {
+      flights:    lastResults.flights  * 52,
+      meatkg:     meatKgPerWeek        * 52,
+      avgt:       (lastResults.diet + lastResults.pkgs + lastResults.clothing + lastResults.flights) * 52,
+      clothitems: Math.round(clothingNew * 12 / 30),
+      clothco2:   lastResults.clothing * 52,
+      packages:   lastResults.pkgs     * 52
+    };
+
+  } catch(e) {
+    document.getElementById('err').textContent = 'Error: ' + e.message;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Calculate my weekly footprint';
+}
+
+/* ══════════════════════════════════════════════════════
+   SCREEN SWITCHING
+══════════════════════════════════════════════════════ */
+function showChart() {
+  if (!lastResults) return;
+  document.getElementById('screen-chart').classList.add('visible');
+  document.getElementById('screen-chart').scrollIntoView({ behavior: 'smooth' });
+  buildChart(); // rebuild so user bubble is included
+}
+
+function showCalc() {
+  document.getElementById('screen-calc').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ══════════════════════════════════════════════════════
+   BUBBLE CHART LOGIC
+══════════════════════════════════════════════════════ */
+let userEmissionsData = null;
+let metricMode = 'total';
+let sim;
+
+const RAW = [
+  { name:'China',       flights:80,   meatkg:70.57,  avgt:866,  clothitems:28, clothco2:420, packages:22.1 },
+  { name:'India',       flights:17,   meatkg:6.63,   avgt:220,  clothitems:9,  clothco2:135, packages:1.6  },
+  { name:'Russia',      flights:130,  meatkg:81.71,  avgt:1229, clothitems:20, clothco2:300, packages:15.8 },
+  { name:'Germany',     flights:420,  meatkg:71.32,  avgt:677,  clothitems:45, clothco2:675, packages:30.2 },
+  { name:'UK',          flights:560,  meatkg:84.08,  avgt:453,  clothitems:48, clothco2:720, packages:51.0 },
+  { name:'Canada',      flights:480,  meatkg:90.96,  avgt:1342, clothitems:42, clothco2:630, packages:31.2 },
+  { name:'Australia',   flights:680,  meatkg:112.34, avgt:1448, clothitems:56, clothco2:840, packages:35.5 },
+  { name:'Qatar',       flights:1800, meatkg:88.81,  avgt:4127, clothitems:32, clothco2:480, packages:26.2 },
+  { name:'UAE',         flights:2300, meatkg:83.21,  avgt:2013, clothitems:35, clothco2:525, packages:20.2 },
+  { name:'Brazil',      flights:90,   meatkg:98.79,  avgt:228,  clothitems:22, clothco2:330, packages:6.7  },
+  { name:'Nigeria',     flights:8,    meatkg:7.61,   avgt:58,   clothitems:6,  clothco2:90,  packages:1.0  },
+  { name:'Indonesia',   flights:45,   meatkg:19.16,  avgt:287,  clothitems:14, clothco2:210, packages:7.7  },
+  { name:'USA',         flights:340,  meatkg:112.80, avgt:1420, clothitems:51, clothco2:765, packages:71.2 },
+  { name:'Switzerland', flights:780,  meatkg:66.68,  avgt:359,  clothitems:50, clothco2:750, packages:26.1 },
+  { name:'France',      flights:390,  meatkg:84.60,  avgt:397,  clothitems:43, clothco2:645, packages:24.7 },
+  { name:'Ireland',     flights:980,  meatkg:90.67,  avgt:634,  clothitems:40, clothco2:600, packages:26.5 },
+  { name:'Norway',      flights:820,  meatkg:72.24,  avgt:667,  clothitems:32, clothco2:480, packages:30.7 },
+];
+
+const COUNTRY_COLORS = {
+  China:'#e07b54', India:'#e8c84a', Russia:'#7b8fc9', Germany:'#a0c878',
+  UK:'#5b9ecf', Canada:'#e8844a', Australia:'#d4a84b', Brazil:'#6abf8a',
+  Nigeria:'#c97b3a', Indonesia:'#e06b6b', Switzerland:'#8fc4b0', France:'#b07bc9',
+  Ireland:'#5db87a', Norway:'#5bafc4', Qatar:'#c9a06b', UAE:'#9b7bc9',
+  USA:'rgb(52, 151, 103)',
+};
+
+const BREAKDOWN_KEYS = [
+  { key:'flights',    label:'flights (kg CO₂)' },
+  { key:'meatkg',     label:'meat (kg)' },
+  { key:'avgt',       label:'avg total CO₂' },
+  { key:'clothitems', label:'clothing items' },
+  { key:'clothco2',   label:'clothing CO₂ (kg)' },
+  { key:'packages',   label:'e-commerce CO₂ (kg)' },
+];
+
+function getColor(d) { return d.isUser ? '#22c55e' : (COUNTRY_COLORS[d.name] || '#ccc'); }
+function getStroke(d) { return d.isUser ? '#16a34a' : d3.color(COUNTRY_COLORS[d.name] || '#ccc').darker(0.6).toString(); }
+function metricVal(d, m) {
+  if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothco2 + d.packages;
+  return d[m];
+}
+
+function buildChart() {
+  const container = document.getElementById('sketch-container');
+  const W = container.clientWidth  || 600;
+  const H = container.clientHeight || 600;
+
+  const svg = d3.select('#chart-svg');
+  svg.attr('viewBox', `0 0 ${W} ${H}`);
+  svg.selectAll('*').remove();
+
+  /* merge user data if available */
+  const data = [...RAW];
+  if (userEmissionsData) {
+    data.push({ name: 'You', ...userEmissionsData, isUser: true });
+  }
+
+  const KEY_MAXES = {};
+  BREAKDOWN_KEYS.forEach(({ key }) => {
+    KEY_MAXES[key] = Math.max(...data.map(d => d[key]));
+  });
+
+  const maxVal = Math.max(...data.map(d => metricVal(d, metricMode)));
+  const maxR   = Math.min(W, H) * 0.14;
+  const rScale = d3.scalePow().exponent(0.35).domain([0, maxVal]).range([3, maxR]);
+
+  const nodes = data.map(d => ({
+    ...d,
+    val: metricVal(d, metricMode),
+    r:   rScale(metricVal(d, metricMode)),
+    x:   W / 2 + (Math.random() - 0.5) * W * 0.3,
+    y:   H / 2 + (Math.random() - 0.5) * H * 0.3,
+  }));
+
+  const g = svg.append('g');
+
+  const nodeG = g.selectAll('g.node')
+    .data(nodes)
+    .join('g')
+    .attr('class', 'node')
+    .style('cursor', 'pointer');
+
+  nodeG.append('circle')
+    .attr('r', d => d.r)
+    .attr('fill', d => getColor(d))
+    .attr('stroke', d => getStroke(d))
+    .attr('stroke-width', d => d.isUser ? 2.5 : 1.5)
+    .attr('opacity', 0);
+
+  nodeG.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dominant-baseline', 'middle')
+    .style('pointer-events', 'none')
+    .style('font-family', 'pangea, system-ui, sans-serif')
+    .attr('fill', '#fff')
+    .attr('font-size', d => Math.max(9, Math.min(13, d.r * 0.38)))
+    .attr('font-weight', d => d.isUser ? '600' : '400')
+    .text(d => d.r > 14 ? (d.isUser ? 'You ★' : d.name) : '');
+
+  function renderSidebar(d) {
+    const panel = document.getElementById('info-panel');
+    panel.classList.remove('empty');
+    const usaVal = metricVal(data.find(r => r.name === 'USA'), metricMode);
+    const pct    = Math.round((d.val / usaVal) * 100);
+    document.getElementById('countryName').textContent = d.isUser ? 'You ★' : (d.name === 'USA' ? 'USA ★' : d.name);
+    document.getElementById('countryMeta').textContent = `${pct}% of USA  ·  ${Math.round(d.val).toLocaleString()} total`;
+    document.getElementById('countryBreakdown').innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
+      const v = d[key] || 0;
+      const barPct = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
+      const disp   = Number.isInteger(v) ? v : v.toFixed(1);
+      return `<div class="breakdown-row">
+        <div class="breakdown-label">${label}</div>
+        <div class="breakdown-bar-wrap">
+          <div class="breakdown-bar-bg"><div class="breakdown-bar-fill" style="width:${barPct}%"></div></div>
+          <div class="breakdown-val">${disp}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function clearSidebar() {
+    document.getElementById('info-panel').classList.add('empty');
+  }
+
+  nodeG
+    .on('mouseover', function(event, d) {
+      d3.select(this).select('circle').attr('stroke-width', 3.5);
+      renderSidebar(d);
+    })
+    .on('mouseout', function(event, d) {
+      d3.select(this).select('circle').attr('stroke-width', d.isUser ? 2.5 : 1.5);
+      const user = nodes.find(n => n.isUser);
+      if (user) renderSidebar(user); else clearSidebar();
+    });
+
+  if (sim) sim.stop();
+  sim = d3.forceSimulation(nodes)
+    .force('charge',  d3.forceManyBody().strength(5))
+    .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.08))
+    .force('collide', d3.forceCollide(d => d.r + 3).strength(0.9).iterations(3))
+    .force('x',       d3.forceX(W / 2).strength(0.04))
+    .force('y',       d3.forceY(H / 2).strength(0.04))
+    .on('tick', () => {
+      nodeG.attr('transform', d =>
+        `translate(${Math.max(d.r, Math.min(W - d.r, d.x))},${Math.max(d.r, Math.min(H - d.r, d.y))})`
+      );
+    });
+
+  nodeG.select('circle')
+    .transition().duration(600).delay((d, i) => i * 40)
+    .attr('opacity', 1);
+
+  const userNode = nodes.find(n => n.isUser);
+  if (userNode) setTimeout(() => renderSidebar(userNode), 800);
+}
+
+/* ── CONTROLS ── */
+document.getElementById('replayBtn').onclick  = buildChart;
+document.getElementById('metricSel').onchange = function() { metricMode = this.value; buildChart(); };
+window.addEventListener('resize', () => { if (sim) sim.stop(); buildChart(); });
+</script>
 </body>
 </html>
- 
