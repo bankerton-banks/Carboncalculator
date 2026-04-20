@@ -4,17 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Consumer4ever — CO₂ Visualized</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<!-- ══════════════════════════════
-     SCREEN 1 — CALCULATOR
-══════════════════════════════ -->
-<div id="screen-calc">
+<div id="app">
 
-  <aside class="sidebar">
-      <div class="header">CO2 Emissions:<br>Visualized</div>
+  <!-- ══════════════════════════════
+       SHARED STICKY SIDEBAR
+  ══════════════════════════════ -->
+  <div id="sidebar">
+
+    <!-- Calc sidebar content -->
+    <div id="sidebar-calc">
+      <div class="header">CO Emissions:<br>Visualized</div>
       <div>
 
          <h1 style="margin-top:24px;">Enter your weekly habits to see your climate impact.</h1>
@@ -24,140 +27,151 @@
             <button class="toggle-btn active" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
          </div>
     </div>
-  </aside>
+    </div>
 
-  <div class="main-content">
+    <!-- Chart sidebar content (fades in over calc content) -->
+    <div id="sidebar-chart">
+      <button id="back-btn" onclick="showCalc()">← back</button>
+      <h1>This is how your consumption compares to the rest of the world:</h1>
 
-    <!-- DIET -->
-    <div class="card">
-      <h2>Diet</h2>
-      <div class="field-row">
-        <div class="field">
-          <label>Meat meals per week</label>
-          <input type="number" id="meat-meals" value="5" min="0" max="21" />
+      <div id="chart-ctrls">
+        <select id="metricSel">
+          <option value="total">all categories</option>
+          <option value="flights">flights only</option>
+          <option value="clothco2">clothing only</option>
+          <option value="packages">e-commerce only</option>
+          <option value="meatkg">meat consumption</option>
+          <option value="avgt">avg total CO₂</option>
+        </select>
+        <button id="replayBtn">replay</button>
+      </div>
+
+      <div id="info-panel" class="empty">
+        <div id="countryName"></div>
+        <div id="countryMeta"></div>
+        <div id="countryBreakdown"></div>
+      </div>
+
+      <div id="hint">hover a bubble to explore</div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+
+  <!-- ══════════════════════════════
+       RIGHT SCROLLABLE COLUMN
+  ══════════════════════════════ -->
+  <div id="right-col">
+
+    <!-- CALCULATOR SECTION -->
+    <div id="section-calc">
+
+      <!-- DIET -->
+      <div class="card">
+        <h2>Diet</h2>
+        <div class="field-row">
+          <div class="field">
+            <label>Meat meals per week</label>
+            <input type="number" id="meat-meals" value="5" min="0" max="21" />
+          </div>
+          <div class="field">
+            <label>Meat type</label>
+            <select id="meat-type">
+              <option value="beef">Beef</option>
+              <option value="pork">Pork</option>
+              <option value="chicken">Chicken</option>
+              <option value="lamb">Lamb</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <label>Meat type</label>
-          <select id="meat-type">
-            <option value="beef">Beef</option>
-            <option value="pork">Pork</option>
-            <option value="chicken">Chicken</option>
-            <option value="lamb">Lamb</option>
-          </select>
+        <p class="field-hint">Select the meat type you consume most often.</p>
+      </div>
+
+      <!-- SHOPPING -->
+      <div class="card">
+        <h2>Shopping + Packages</h2>
+        <div class="field-row">
+          <div class="field">
+            <label>Packages per week</label>
+            <input type="number" id="packages" value="2" min="0" />
+          </div>
+          <div class="field">
+            <label>Delivery speed</label>
+            <select id="delivery-type">
+              <option value="standard">Standard</option>
+              <option value="express">Express (next day)</option>
+            </select>
+          </div>
         </div>
       </div>
-      <p class="field-hint">Select the meat type you consume most often.</p>
-    </div>
 
-    <!-- SHOPPING -->
-    <div class="card">
-      <h2>Shopping + Packages</h2>
-      <div class="field-row">
-        <div class="field">
-          <label>Packages per week</label>
-          <input type="number" id="packages" value="2" min="0" />
+      <!-- CLOTHING -->
+      <div class="card">
+        <h2>Clothing</h2>
+        <div class="field-row">
+          <div class="field">
+            <label>New clothes (USD/mo)</label>
+            <input type="number" id="clothing-spend" value="50" min="0" />
+          </div>
+          <div class="field">
+            <label>Secondhand (USD/mo)</label>
+            <input type="number" id="clothing-secondhand-spend" value="0" min="0" />
+          </div>
         </div>
-        <div class="field">
-          <label>Delivery speed</label>
-          <select id="delivery-type">
-            <option value="standard">Standard</option>
-            <option value="express">Express (next day)</option>
-          </select>
+        <p class="field-hint">Enter your monthly spend on clothing.</p>
+      </div>
+
+      <!-- FLIGHTS -->
+      <div class="card">
+        <h2>Flights</h2>
+        <div class="field-row">
+          <div class="field">
+            <label>Flights per year</label>
+            <input type="number" id="flight-count" value="2" min="0" />
+          </div>
+          <div class="field">
+            <label id="flight-km-label">Avg distance (miles)</label>
+            <input type="number" id="flight-km" value="621" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="err" id="err"></div>
+
+      <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
+
+      <!-- RESULTS -->
+      <div id="result">
+        <h2>Your estimated weekly carbon footprint</h2>
+        <div class="result-grid">
+          <div class="result-item"><div class="val" id="res-total">—</div><div class="lbl" id="lbl-total">kg CO₂e / week</div></div>
+          <div class="result-item"><div class="val" id="res-annual">—</div><div class="lbl" id="lbl-annual">kg CO₂e / year</div></div>
+          <div class="result-item"><div class="val" id="res-diet">—</div><div class="lbl" id="lbl-diet">kg from diet</div></div>
+          <div class="result-item"><div class="val" id="res-packages">—</div><div class="lbl" id="lbl-packages">kg from packages</div></div>
+          <div class="result-item"><div class="val" id="res-clothing">—</div><div class="lbl" id="lbl-clothing">kg from clothing</div></div>
+          <div class="result-item"><div class="val" id="res-flights">—</div><div class="lbl" id="lbl-flights">kg from flights</div></div>
+        </div>
+        <p class="context" id="res-context"></p>
+        <button class="go" style="margin-top:1rem;" onclick="showChart()">See how you compare globally →</button>
+      </div>
+
+    </div><!-- /section-calc -->
+
+    <!-- GAP DIVIDER -->
+    <div id="section-divider"></div>
+
+    <!-- CHART SECTION -->
+    <div id="section-chart">
+      <div id="chart-right">
+        <div id="sketch-container">
+          <svg id="chart-svg"></svg>
         </div>
       </div>
     </div>
 
-    <!-- CLOTHING -->
-    <div class="card">
-      <h2>Clothing</h2>
-      <div class="field-row">
-        <div class="field">
-          <label>New clothes (USD/mo)</label>
-          <input type="number" id="clothing-spend" value="50" min="0" />
-        </div>
-        <div class="field">
-          <label>Secondhand (USD/mo)</label>
-          <input type="number" id="clothing-secondhand-spend" value="0" min="0" />
-        </div>
-      </div>
-      <p class="field-hint">Enter your monthly spend on clothing.</p>
-    </div>
+  </div><!-- /right-col -->
 
-    <!-- FLIGHTS -->
-    <div class="card">
-      <h2>Flights</h2>
-      <div class="field-row">
-        <div class="field">
-          <label>Flights per year</label>
-          <input type="number" id="flight-count" value="2" min="0" />
-        </div>
-        <div class="field">
-          <label id="flight-km-label">Avg distance (miles)</label>
-          <input type="number" id="flight-km" value="621" min="0" />
-        </div>
-      </div>
-    </div>
-
-    <div class="err" id="err"></div>
-
-    <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
-
-    <!-- RESULTS (appears inline after calculation) -->
-    <div id="result">
-      <h2>Your estimated weekly carbon footprint</h2>
-      <div class="result-grid">
-        <div class="result-item"><div class="val" id="res-total">—</div><div class="lbl" id="lbl-total">kg CO₂e / week</div></div>
-        <div class="result-item"><div class="val" id="res-annual">—</div><div class="lbl" id="lbl-annual">kg CO₂e / year</div></div>
-        <div class="result-item"><div class="val" id="res-diet">—</div><div class="lbl" id="lbl-diet">kg from diet</div></div>
-        <div class="result-item"><div class="val" id="res-packages">—</div><div class="lbl" id="lbl-packages">kg from packages</div></div>
-        <div class="result-item"><div class="val" id="res-clothing">—</div><div class="lbl" id="lbl-clothing">kg from clothing</div></div>
-        <div class="result-item"><div class="val" id="res-flights">—</div><div class="lbl" id="lbl-flights">kg from flights</div></div>
-      </div>
-      <p class="context" id="res-context"></p>
-      <button class="go" style="margin-top:1rem;" onclick="showChart()">See how you compare globally →</button>
-    </div>
-
-  </div><!-- /main-content -->
-</div><!-- /screen-calc -->
-
-
-<!-- ══════════════════════════════
-     SCREEN 2 — BUBBLE CHART
-══════════════════════════════ -->
-<div id="screen-chart">
-
-  <div id="chart-left">
-    <button id="back-btn" onclick="showCalc()">← back</button>
-    <h1>This is how your consumption compares to the rest of the world:</h1>
-
-    <div id="chart-ctrls">
-      <select id="metricSel">
-        <option value="total">all categories</option>
-        <option value="flights">flights only</option>
-        <option value="clothco2">clothing only</option>
-        <option value="packages">e-commerce only</option>
-        <option value="meatkg">meat consumption</option>
-        <option value="avgt">avg total CO₂</option>
-      </select>
-      <button id="replayBtn">replay</button>
-    </div>
-
-    <div id="info-panel" class="empty">
-      <div id="countryName"></div>
-      <div id="countryMeta"></div>
-      <div id="countryBreakdown"></div>
-    </div>
-
-    <div id="hint">hover a bubble to explore</div>
-  </div>
-
-  <div id="chart-right">
-    <div id="sketch-container">
-      <svg id="chart-svg"></svg>
-    </div>
-  </div>
-
-</div><!-- /screen-chart -->
+</div><!-- /app -->
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
@@ -282,7 +296,6 @@ async function calculate() {
 
     renderResults(lastResults);
 
-    /* store for bubble chart */
     userEmissionsData = {
       flights:    lastResults.flights  * 52,
       meatkg:     meatKgPerWeek        * 52,
@@ -305,13 +318,33 @@ async function calculate() {
 ══════════════════════════════════════════════════════ */
 function showChart() {
   if (!lastResults) return;
-  document.getElementById('screen-chart').classList.add('visible');
-  document.getElementById('screen-chart').scrollIntoView({ behavior: 'smooth' });
-  buildChart(); // rebuild so user bubble is included
+
+  // Swap sidebar panels
+  document.getElementById('sidebar-calc').classList.add('hidden');
+  document.getElementById('sidebar-chart').classList.add('visible');
+
+  // Show chart section + divider
+  document.getElementById('section-divider').classList.add('visible');
+  document.getElementById('section-chart').classList.add('visible');
+
+  // Scroll so the divider / chart section comes into view
+  setTimeout(() => {
+    document.getElementById('section-chart').scrollIntoView({ behavior: 'smooth' });
+  }, 50);
+
+  buildChart();
 }
 
 function showCalc() {
-  document.getElementById('screen-calc').scrollIntoView({ behavior: 'smooth' });
+  // Swap sidebar panels back
+  document.getElementById('sidebar-calc').classList.remove('hidden');
+  document.getElementById('sidebar-chart').classList.remove('visible');
+
+  // Hide chart section + divider
+  document.getElementById('section-divider').classList.remove('visible');
+  document.getElementById('section-chart').classList.remove('visible');
+
+  document.getElementById('section-calc').scrollIntoView({ behavior: 'smooth' });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -374,7 +407,6 @@ function buildChart() {
   svg.attr('viewBox', `0 0 ${W} ${H}`);
   svg.selectAll('*').remove();
 
-  /* merge user data if available */
   const data = [...RAW];
   if (userEmissionsData) {
     data.push({ name: 'You', ...userEmissionsData, isUser: true });
