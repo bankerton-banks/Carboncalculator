@@ -14,7 +14,7 @@
 
     body {
       font-family: pangea, system-ui, sans-serif;
-      background: var(--white);
+      background: rgb(148, 225, 187);
       color: #003012;
     }
 
@@ -41,6 +41,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      background-color: white;
     }
 
     /* Panel A — calculator sidebar content */
@@ -137,6 +138,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
       align-content: start;
+
     }
 
     .card {
@@ -302,6 +304,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      background-color: white;
     }
 
     #sketch-container {
@@ -322,6 +325,7 @@
       font-family: ease, Georgia, serif;
       line-height: 1.1;
       margin-bottom: 28px;
+      background-color: white;
     }
 
     #back-btn {
