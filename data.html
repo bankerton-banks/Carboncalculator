@@ -4,7 +4,238 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Emissions / Bubble Chart</title>
-    <link rel="stylesheet" href="data.css">
+  <style>
+    @font-face {
+      font-family: ease;
+      src: url(fonts/EaseDisplayTRIAL-Regular.otf);
+    }
+    @font-face {
+      font-family: pangea;
+      src: url(fonts/FwTRIAL-PangeaVAR.ttf) format('woff2');
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: pangea, system-ui, sans-serif;
+      background: #fff;
+    }
+
+    #layout {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ── LEFT PANEL ── */
+    #left-panel {
+      width: 35%;
+      min-width: 260px;
+      height: 100vh;
+      padding: 40px 40px 40px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      border-right: 1.5px solid rgb(52, 151, 103);
+      overflow: hidden;
+    }
+
+    .header { margin-bottom: 28px; }
+
+    h1 {
+      font-size: clamp(2rem, 3.5vw, 4em);
+      color: rgb(52, 151, 103);
+      font-family: ease, Georgia, serif;
+      line-height: 1.1;
+    }
+
+    #ctrls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+    }
+
+    button {
+      background-color: #fff;
+      color: #003012;
+      border: 1.5px solid rgb(52, 151, 103);
+      border-radius: 100px;
+      padding: 10px 14px;
+      font-size: 16px;
+      width: 100px;
+      height: 45px;
+      cursor: pointer;
+      font-family: pangea, system-ui, sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+    button:hover { background: rgb(52, 151, 103); color: #fff; }
+
+    select {
+      background-color: #fff;
+      color: #003012;
+      border: 1.5px solid rgb(52, 151, 103);
+      border-radius: 100px;
+      padding: 10px 14px;
+      font-size: 16px;
+      width: max-content;
+      height: 45px;
+      cursor: pointer;
+      font-family: pangea, system-ui, sans-serif;
+      -webkit-appearance: none;
+      appearance: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l-5-6h10z' fill='%23349767'/%3E%3C/svg%3E") no-repeat right 10px center / 14px #fff;
+    }
+
+    /* ── INFO PANEL ── */
+    #info-panel {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1.5px solid rgb(52, 151, 103);
+      width: 100%;
+      transition: opacity 0.2s;
+      font-family: pangea, system-ui, sans-serif;
+    }
+
+    #info-panel.empty { opacity: 0; pointer-events: none; }
+
+    #countryName {
+      font-size: 2em;
+      font-family: ease, Georgia, serif;
+      color: rgb(52, 151, 103);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+
+    #countryMeta {
+      font-size: 13px;
+      color: #444;
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+      font-family: pangea, system-ui, sans-serif;
+    }
+
+    #countryBreakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .breakdown-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .breakdown-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+    }
+
+    .breakdown-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .breakdown-bar-bg {
+      flex: 1;
+      height: 5px;
+      background: rgb(148, 225, 187);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .breakdown-bar-fill {
+      height: 100%;
+      background: rgb(255, 23, 104);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .breakdown-val {
+      font-size: 12px;
+      color: #333;
+      min-width: 38px;
+      text-align: right;
+    }
+
+    #hint {
+      margin-top: auto;
+      padding-top: 20px;
+      color: #bbb;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── RIGHT PANEL ── */
+    #right-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #sketch-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #sketch-container svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      #layout {
+        flex-direction: column;
+        height: auto;
+      }
+
+      #left-panel {
+        width: 100%;
+        height: auto;
+        min-width: unset;
+        padding: 24px 20px;
+        border-right: none;
+        border-bottom: 1.5px solid rgb(52, 151, 103);
+      }
+
+      h1 {
+        font-size: 2.2em;
+        line-height: 1.1;
+        margin-bottom: 20px;
+      }
+
+      #ctrls { flex-wrap: wrap; gap: 8px; }
+
+      button, select {
+        width: auto;
+        min-width: 110px;
+        height: 44px;
+        font-size: 14px;
+      }
+
+      #info-panel { margin-top: 24px; padding-top: 16px; }
+      #countryName { font-size: 1.6em; }
+
+      #right-panel {
+        width: 100%;
+        height: 60vh;
+        min-height: 300px;
+      }
+
+      html, body { overflow-x: hidden; }
+    }
+  </style>
 </head>
 <body>
 
@@ -96,6 +327,40 @@
     KEY_MAXES[key] = Math.max(...RAW.map(d => d[key]));
   });
 
+  /* ── COUNTRY COLOURS ──────────────────────────────────────────────────── */
+  const COUNTRY_COLORS = {
+    'China':       '#e07b54',
+    'India':       '#e8c84a',
+    'Russia':      '#7b8fc9',
+    'Germany':     '#a0c878',
+    'UK':          '#5b9ecf',
+    'Canada':      '#e8844a',
+    'Australia':   '#d4a84b',
+    'Brazil':      '#6abf8a',
+    'Nigeria':     '#c97b3a',
+    'Indonesia':   '#e06b6b',
+    'Switzerland': '#8fc4b0',
+    'France':      '#b07bc9',
+    'Ireland':     '#5db87a',
+    'Norway':      '#5bafc4',
+    'Qatar':       '#c9a06b',
+    'UAE':         '#9b7bc9',
+    'USA':         'rgb(52, 151, 103)',
+  };
+
+  const youFill   = '#22c55e';
+  const youStroke = '#16a34a';
+
+  function getColor(d) {
+    if (d.isUser) return youFill;
+    return COUNTRY_COLORS[d.name] || '#ccc';
+  }
+
+  function getStroke(d) {
+    if (d.isUser) return youStroke;
+    return d3.color(COUNTRY_COLORS[d.name] || '#ccc').darker(0.6).toString();
+  }
+
   function metricVal(d, m) {
     if (m === 'total') return d.flights + d.meatkg + d.avgt + d.clothco2 + d.packages;
     return d[m];
@@ -113,16 +378,6 @@
     H = el.clientHeight || 600;
     svg.attr('viewBox', `0 0 ${W} ${H}`);
   }
-
-  /* ── COLOURS ──────────────────────────────────────────────────────────── */
-  const bubbleFill   = 'rgb(148, 225, 187)';
-  const bubbleStroke = 'rgb(52, 151, 103)';
-  const usaFill      = 'rgb(52, 151, 103)';
-  const usaStroke    = 'rgb(30, 100, 65)';
-  const youFill      = '#22c55e';
-  const youStroke    = '#16a34a';
-  const labelDark    = '#003012';
-  const labelLight   = '#fff';
 
   /* ── BUILD CHART ─────────────────────────────────────────────────────── */
   function buildChart() {
@@ -151,9 +406,9 @@
 
     nodeG.append('circle')
       .attr('r',            d => d.r)
-      .attr('fill',         d => d.isUser ? youFill   : d.name === 'USA' ? usaFill   : bubbleFill)
-      .attr('stroke',       d => d.isUser ? youStroke : d.name === 'USA' ? usaStroke : bubbleStroke)
-      .attr('stroke-width', d => (d.isUser || d.name === 'USA') ? 2.5 : 1.5)
+      .attr('fill',         d => getColor(d))
+      .attr('stroke',       d => getStroke(d))
+      .attr('stroke-width', d => d.isUser ? 2.5 : 1.5)
       .attr('opacity', 0);
 
     nodeG.append('text')
@@ -161,9 +416,9 @@
       .attr('dominant-baseline', 'middle')
       .style('pointer-events', 'none')
       .style('font-family', 'pangea, system-ui, sans-serif')
-      .attr('fill',        d => (d.isUser || d.name === 'USA') ? labelLight : labelDark)
-      .attr('font-size',   d => Math.max(9, Math.min(13, d.r * 0.38)))
-      .attr('font-weight', d => (d.isUser || d.name === 'USA') ? '500' : '400')
+      .attr('fill',      '#fff')
+      .attr('font-size', d => Math.max(9, Math.min(13, d.r * 0.38)))
+      .attr('font-weight', d => d.isUser ? '500' : '400')
       .text(d => d.r > 14 ? (d.isUser ? 'You ★' : d.name) : '');
 
     nodeG
@@ -172,8 +427,7 @@
         renderSidebar(d);
       })
       .on('mouseout', function(event, d) {
-        d3.select(this).select('circle')
-          .attr('stroke-width', (d.isUser || d.name === 'USA') ? 2.5 : 1.5);
+        d3.select(this).select('circle').attr('stroke-width', d.isUser ? 2.5 : 1.5);
         const user = nodes.find(n => n.isUser);
         if (user) renderSidebar(user); else clearSidebar();
       });
