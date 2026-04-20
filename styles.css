@@ -275,9 +275,7 @@
     #section-divider {
       display: none;
       height: 60px;
-      background: var(--white);
-      border-top: 1.5px solid var(--green);
-      border-bottom: 1.5px solid var(--green);
+      background:var(--white);
       align-items: center;
       padding: 0 40px;
     }
