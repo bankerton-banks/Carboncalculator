@@ -354,10 +354,11 @@ function showChart() {
   }, 50);
 
   if (window.innerWidth <= 768) {
-  document.getElementById('mobile-chart-panel').style.display = 'flex';
-}
+    document.getElementById('mobile-chart-panel').style.display = 'flex';
+    document.querySelectorAll('#section-calc .card, #section-calc #calc-btn').forEach(el => el.style.display = 'none');
+  }
 
-  buildChart();
+  requestAnimationFrame(() => requestAnimationFrame(buildChart));
 }
 
 function showCalc() {
@@ -368,6 +369,11 @@ function showCalc() {
   // Hide chart section + divider
   document.getElementById('section-divider').classList.remove('visible');
   document.getElementById('section-chart').classList.remove('visible');
+
+  if (window.innerWidth <= 768) {
+    document.getElementById('mobile-chart-panel').style.display = 'none';
+    document.querySelectorAll('#section-calc .card, #section-calc #calc-btn').forEach(el => el.style.display = '');
+  }
 
   document.getElementById('section-calc').scrollIntoView({ behavior: 'smooth' });
 }
@@ -401,8 +407,8 @@ const RAW = [
 
 const COUNTRY_COLORS = {
   China:'#4BBBD9', India:'#761100', Russia:'#CD00E1', Germany:'#0117E1',
-  UK:'#FAFF8C', Canada:'#B5A0C9', Australia:'#170048', Brazil:'#00473F',
-  Nigeria:'#660053', Indonesia:'#7A78E0', Switzerland:'#FFC225', France:'#FF70A5',
+  UK:'#074707', Canada:'#B5A0C9', Australia:'#170048', Brazil:'#00473F',
+  Nigeria:'#660053', Indonesia:'#7A78E0', Switzerland:'#ffe000', France:'#FF70A5',
   Ireland:'#7109AE', Norway:'#008CAD', Qatar:'#FF930F', UAE:'#AD0028',
   USA:'rgb(52, 151, 103)',
 };
@@ -480,13 +486,11 @@ function buildChart() {
     .text(d => d.r > 14 ? (d.isUser ? 'You ★' : d.name) : '');
 
   function renderSidebar(d) {
-    const panel = document.getElementById('info-panel');
-    panel.classList.remove('empty');
-    const usaVal = metricVal(data.find(r => r.name === 'USA'), metricMode);
-    const pct    = Math.round((d.val / usaVal) * 100);
-    document.getElementById('countryName').textContent = d.isUser ? 'You ★' : (d.name === 'USA' ? 'USA ★' : d.name);
-    document.getElementById('countryMeta').textContent = `${pct}% of USA  ·  ${Math.round(d.val).toLocaleString()} total`;
-    document.getElementById('countryBreakdown').innerHTML = BREAKDOWN_KEYS.map(({ key, label }) => {
+    const usaVal    = metricVal(data.find(r => r.name === 'USA'), metricMode);
+    const pct       = Math.round((d.val / usaVal) * 100);
+    const name      = d.isUser ? 'You ★' : (d.name === 'USA' ? 'USA ★' : d.name);
+    const meta      = `${pct}% of USA  ·  ${Math.round(d.val).toLocaleString()} total`;
+    const breakdown = BREAKDOWN_KEYS.map(({ key, label }) => {
       const v = d[key] || 0;
       const barPct = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
       const disp   = Number.isInteger(v) ? v : v.toFixed(1);
@@ -498,10 +502,22 @@ function buildChart() {
         </div>
       </div>`;
     }).join('');
+
+    ['', '-mobile'].forEach(suffix => {
+      const panel = document.getElementById('info-panel' + suffix);
+      if (!panel) return;
+      panel.classList.remove('empty');
+      document.getElementById('countryName'      + suffix).textContent = name;
+      document.getElementById('countryMeta'      + suffix).textContent = meta;
+      document.getElementById('countryBreakdown' + suffix).innerHTML   = breakdown;
+    });
   }
 
   function clearSidebar() {
-    document.getElementById('info-panel').classList.add('empty');
+    ['', '-mobile'].forEach(suffix => {
+      const panel = document.getElementById('info-panel' + suffix);
+      if (panel) panel.classList.add('empty');
+    });
   }
 
   nodeG
@@ -538,7 +554,18 @@ function buildChart() {
 
 /* ── CONTROLS ── */
 document.getElementById('replayBtn').onclick  = buildChart;
-document.getElementById('metricSel').onchange = function() { metricMode = this.value; buildChart(); };
+document.getElementById('metricSel').onchange = function() {
+  metricMode = this.value;
+  const mob = document.getElementById('metricSel-mobile');
+  if (mob) mob.value = this.value;
+  buildChart();
+};
+document.getElementById('replayBtn-mobile').onclick  = buildChart;
+document.getElementById('metricSel-mobile').onchange = function() {
+  metricMode = this.value;
+  document.getElementById('metricSel').value = this.value;
+  buildChart();
+};
 window.addEventListener('resize', () => { if (sim) sim.stop(); buildChart(); });
 </script>
 </body>
