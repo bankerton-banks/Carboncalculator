@@ -45,7 +45,6 @@
           <option value="meatkg">meat consumption</option>
           <option value="avgt">avg total CO₂</option>
         </select>
-        <button id="replayBtn">replay</button>
       </div>
 
       <div id="info-panel" class="empty">
@@ -172,6 +171,7 @@
     </div>
 
     <div id="mobile-chart-panel" style="display:none;">
+  <button id="back-btn-mobile" onclick="showCalc()">← back</button>
   <div id="chart-ctrls-mobile">
     <select id="metricSel-mobile">
       <option value="total">all categories</option>
@@ -181,7 +181,6 @@
       <option value="meatkg">meat consumption</option>
       <option value="avgt">avg total CO₂</option>
     </select>
-    <button id="replayBtn-mobile">replay</button>
   </div>
   <div id="info-panel-mobile" class="empty">
     <div id="countryName-mobile"></div>
@@ -354,6 +353,7 @@ function showChart() {
   }, 50);
 
   if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').style.display = 'none';
     document.getElementById('mobile-chart-panel').style.display = 'flex';
     document.querySelectorAll('#section-calc .card, #section-calc #calc-btn').forEach(el => el.style.display = 'none');
   }
@@ -371,6 +371,7 @@ function showCalc() {
   document.getElementById('section-chart').classList.remove('visible');
 
   if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').style.display = '';
     document.getElementById('mobile-chart-panel').style.display = 'none';
     document.querySelectorAll('#section-calc .card, #section-calc #calc-btn').forEach(el => el.style.display = '');
   }
@@ -410,7 +411,7 @@ const COUNTRY_COLORS = {
   UK:'#074707', Canada:'#B5A0C9', Australia:'#170048', Brazil:'#00473F',
   Nigeria:'#660053', Indonesia:'#7A78E0', Switzerland:'#ffe000', France:'#FF70A5',
   Ireland:'#7109AE', Norway:'#008CAD', Qatar:'#FF930F', UAE:'#AD0028',
-  USA:'rgb(52, 151, 103)',
+  USA: '#a35586',
 };
 
 const BREAKDOWN_KEYS = [
@@ -431,8 +432,9 @@ function metricVal(d, m) {
 
 function buildChart() {
   const container = document.getElementById('sketch-container');
-  const W = container.clientWidth  || 600;
-  const H = container.clientHeight || 600;
+  const mobile = window.innerWidth <= 768;
+  const W = container.clientWidth  || (mobile ? window.innerWidth : 600);
+  const H = container.clientHeight || (mobile ? window.innerHeight * 0.8 : 600);
 
   const svg = d3.select('#chart-svg');
   svg.attr('viewBox', `0 0 ${W} ${H}`);
@@ -553,14 +555,12 @@ function buildChart() {
 }
 
 /* ── CONTROLS ── */
-document.getElementById('replayBtn').onclick  = buildChart;
 document.getElementById('metricSel').onchange = function() {
   metricMode = this.value;
   const mob = document.getElementById('metricSel-mobile');
   if (mob) mob.value = this.value;
   buildChart();
 };
-document.getElementById('replayBtn-mobile').onclick  = buildChart;
 document.getElementById('metricSel-mobile').onchange = function() {
   metricMode = this.value;
   document.getElementById('metricSel').value = this.value;
