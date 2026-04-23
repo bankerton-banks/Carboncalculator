@@ -469,148 +469,52 @@
     /* ══════════════════════════════
        MOBILE
     ══════════════════════════════ */
+    @media (max-width: 768px) {
+      #app { flex-direction: column; }
+
+      #sidebar {
+        position: static;
+        height: auto;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1.5px solid var(--green);
+      }
+
+      #sidebar-calc, #sidebar-chart {
+        position: static;
+        padding: 24px 20px;
+      }
+
+      #section-calc {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+
+      .field-row { flex-direction: column; }
+      .result-grid { grid-template-columns: 1fr 1fr; }
+
+      #section-chart {
+        flex-direction: column;
+        height: auto;
+      }
+
+      #chart-right {
+        width: 100%;
+        height: 60vh;
+        min-height: 300px;
+      }
+    }
 @media (max-width: 768px) {
-
-  /* ───────── LAYOUT ───────── */
-  #app {
-    flex-direction: column;
-  }
-
-  #sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1.5px solid var(--green);
-  }
-
-  #sidebar-calc {
-    padding: 20px;
-    justify-content: flex-start;
-    gap: 12px;
-  }
-
-  /* ❗ FULLY REMOVE DESKTOP CHART SIDEBAR */
   #sidebar-chart {
     display: none !important;
   }
 
-  /* ───────── CALCULATOR ───────── */
-  #section-calc {
-    grid-template-columns: 1fr;
-    padding: 16px;
-    gap: 12px;
-  }
-
-  .field-row {
-    flex-direction: row;
-    gap: 8px;
-  }
-
-  input, select {
-    height: 40px;
-    font-size: 0.9em;
-  }
-
-  .result-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* ───────── CHART ───────── */
-  #section-chart {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-  }
-
-  #chart-right {
-    width: 100%;
-    height: 80vh;        /* 🔥 MUCH BIGGER GRAPH */
-    min-height: 500px;
-    padding: 10px;
-  }
-
-  #sketch-container svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* ───────── MOBILE CONTROL PANEL ───────── */
   #mobile-chart-panel {
-    display: flex !important;
-    flex-direction: column;
-    gap: 14px;
-    padding: 16px;
-    background: white;
-    border-top: 1.5px solid var(--green);
-  }
-
-  /* 🔥 ADD BACK BUTTON INTO MOBILE */
-  #mobile-chart-panel::before {
-    content: "← back";
-    display: inline-block;
-    width: fit-content;
-    padding: 8px 14px;
-    border: 1.5px solid var(--green);
-    border-radius: 100px;
-    margin-bottom: 6px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  /* actual clickable back button */
-  #mobile-back-btn {
-    display: inline-block;
-    width: fit-content;
-    padding: 8px 14px;
-    border: 1.5px solid var(--green);
-    border-radius: 100px;
-    background: white;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  /* controls row */
-  #chart-ctrls-mobile {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  #chart-ctrls-mobile select,
-  #chart-ctrls-mobile button {
-    flex: 1;
-    height: 38px;
-    border-radius: 100px;
-    border: 1.5px solid var(--green);
+    flex-direction: column;
+    padding: 24px 20px;
     background: white;
-    font-size: 13px;
-  }
-
-  /* 🔥 FIX REPLAY BUTTON LOOK */
-  #replayBtn-mobile {
-    background: var(--green-light);
-    border: 1.5px solid var(--green);
-  }
-
-  /* info panel */
-  #info-panel-mobile {
     border-top: 1.5px solid var(--green);
-    padding-top: 12px;
-  }
-
-  /* ───────── SPACING FIXES ───────── */
-  .header {
-    font-size: 2.5em;
-    line-height: 1.1;
-  }
-
-  .subtext {
-    margin-bottom: 12px;
-    font-size: 0.85em;
-  }
-
-  #section-divider {
-    height: 16px;
+    order: 4;
   }
 }
