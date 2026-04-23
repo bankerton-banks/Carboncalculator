@@ -357,7 +357,7 @@ function showChart() {
   document.getElementById('mobile-chart-panel').style.display = 'flex';
 }
 
-  buildChart();
+  requestAnimationFrame(() => requestAnimationFrame(buildChart));
 }
 
 function showCalc() {
