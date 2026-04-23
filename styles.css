@@ -504,3 +504,17 @@
         min-height: 300px;
       }
     }
+@media (max-width: 768px) {
+  #sidebar-chart {
+    display: none !important;
+  }
+
+  #mobile-chart-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    background: white;
+    border-top: 1.5px solid var(--green);
+    order: 4;
+  }
+}

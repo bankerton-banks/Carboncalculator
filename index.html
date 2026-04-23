@@ -171,6 +171,25 @@
       </div>
     </div>
 
+    <div id="mobile-chart-panel" style="display:none;">
+  <div id="chart-ctrls-mobile">
+    <select id="metricSel-mobile">
+      <option value="total">all categories</option>
+      <option value="flights">flights only</option>
+      <option value="clothco2">clothing only</option>
+      <option value="packages">e-commerce only</option>
+      <option value="meatkg">meat consumption</option>
+      <option value="avgt">avg total CO₂</option>
+    </select>
+    <button id="replayBtn-mobile">replay</button>
+  </div>
+  <div id="info-panel-mobile" class="empty">
+    <div id="countryName-mobile"></div>
+    <div id="countryMeta-mobile"></div>
+    <div id="countryBreakdown-mobile"></div>
+  </div>
+</div>
+
   </div><!-- /right-col -->
 
 </div><!-- /app -->
@@ -333,6 +352,10 @@ function showChart() {
   setTimeout(() => {
     document.getElementById('section-chart').scrollIntoView({ behavior: 'smooth' });
   }, 50);
+
+  if (window.innerWidth <= 768) {
+  document.getElementById('mobile-chart-panel').style.display = 'flex';
+}
 
   buildChart();
 }
