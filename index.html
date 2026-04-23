@@ -45,7 +45,6 @@
           <option value="meatkg">meat consumption</option>
           <option value="avgt">avg total CO₂</option>
         </select>
-        <button id="replayBtn">replay</button>
       </div>
 
       <div id="info-panel" class="empty">
@@ -181,7 +180,7 @@
       <option value="meatkg">meat consumption</option>
       <option value="avgt">avg total CO₂</option>
     </select>
-    <button id="replayBtn-mobile">replay</button>
+    <button id="mobile-back-btn" onclick="showCalc()">← back</button>
   </div>
   <div id="info-panel-mobile" class="empty">
     <div id="countryName-mobile"></div>
@@ -400,10 +399,10 @@ const RAW = [
 ];
 
 const COUNTRY_COLORS = {
-  China:'#ed86ae', India:'#0d479b', Russia:'#ffb000', Germany:'#e81c43',
-  UK:'#f1be41', Canada:'#bab0f4', Australia:'#001ef4', Brazil:'#e84221',
-  Nigeria:'#8d311a', Indonesia:'#05c4b5', Switzerland:'#824a77', France:'#7217c1',
-  Ireland:'#3364a7', Norway:'#b4cbe3', Qatar:'#dd66b5', UAE:'#9b3700',
+  China:'#4BBBD9', India:'#761100', Russia:'#CD00E1', Germany:'#0117E1',
+  UK:'#FAFF8C', Canada:'#B5A0C9', Australia:'#170048', Brazil:'##E04B00',
+  Nigeria:'#660053', Indonesia:'#7A78E0', Switzerland:'#FFC225', France:'#FF70A5',
+  Ireland:'#7109AE', Norway:'#008CAD', Qatar:'#FF930F', UAE:'#AD0028',
   USA:'rgb(52, 151, 103)',
 };
 
