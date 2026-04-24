@@ -266,10 +266,11 @@ function renderResults({ diet, pkgs, clothing, flights }) {
   document.getElementById('lbl-clothing').textContent = `${unit} from clothing`;
   document.getElementById('lbl-flights').textContent  = `${unit} from flights`;
 
-  const biggest = Object.entries({ diet, pkgs, clothing, flights }).sort((a, b) => b[1] - a[1])[0][0];
+  const biggestKey = Object.entries({ diet, pkgs, clothing, flights }).sort((a, b) => b[1] - a[1])[0][0];
+  const biggestLabel = { diet: 'diet', pkgs: 'packages', clothing: 'clothing', flights: 'flights' }[biggestKey];
   document.getElementById('res-context').textContent =
-    `The global average weekly footprint is around ${Math.round(avgW)} ${unit} CO₂e. ` +
-    `Yours is ${pct}% of that. Your biggest source is ${biggest}.`;
+    `The average person's weekly footprint is around ${Math.round(avgW)} ${unit} CO₂e. ` +
+    `Yours is ${pct}% of that. Your biggest source is ${biggestLabel}.`;
 
   document.getElementById('result').style.display = 'block';
 }
@@ -507,7 +508,7 @@ function buildChart() {
     const usaVal    = metricVal(data.find(r => r.name === 'USA'), metricMode);
     const pct       = Math.round((d.val / usaVal) * 100);
     const name      = d.isUser ? 'You ★' : (d.name === 'USA' ? 'USA ★' : d.name);
-    const meta      = `${pct}% of USA  ·  ${Math.round(d.val).toLocaleString()} total`;
+    const meta      = `${pct}% of the average USA citizen  ·  ${Math.round(d.val).toLocaleString()} total`;
     const breakdown = BREAKDOWN_KEYS.map(({ key, label }) => {
       const v = d[key] || 0;
       const barPct = Math.min(100, (v / KEY_MAXES[key]) * 100).toFixed(1);
