@@ -224,12 +224,8 @@ const MI_TO_KM = 1.60934;
 const KG_TO_LB = 2.20462;
 
 const MEAT_KG_PER_MEAL  = { beef: 0.25, pork: 0.20, chicken: 0.15, lamb: 0.25 };
-const MEAT_ACTIVITY     = {
-  beef:    'food-type_beef_roast_beef_roasted_baked',
-  pork:    'food-type_pork_cured_ham_roasted_baked',
-  chicken: 'food-type_chicken_roasted_baked',
-  lamb:    'food-type_lamb_roasted_baked'
-};
+const MEAT_BEEF_ACTIVITY = 'food-type_beef_roast_beef_roasted_baked';
+const MEAT_CO2_RATIO    = { beef: 1.0, pork: 0.45, chicken: 0.25, lamb: 1.45 };
 const DELIVERY_DISTANCE = { standard: 50, express: 100 };
 const CLOTHING_NEW_ACTIVITY = 'consumer_goods-type_apparel_accessories_and_other_apparel';
 const CLOTHING_SECONDHAND_DISCOUNT = 0.20;
@@ -313,7 +309,7 @@ async function calculate() {
     const clothingUsedPW = clothingUsed / 4.33;
 
     const [dietData, packageData, clothingNewData, flightData] = await Promise.all([
-      meatKgPerWeek > 0 ? post({ emission_factor: { activity_id: MEAT_ACTIVITY[meatType] }, parameters: { weight: meatKgPerWeek, weight_unit: 'kg' } }) : Promise.resolve({ co2e: 0 }),
+      meatKgPerWeek > 0 ? post({ emission_factor: { activity_id: MEAT_BEEF_ACTIVITY }, parameters: { weight: meatKgPerWeek * MEAT_CO2_RATIO[meatType], weight_unit: 'kg' } }) : Promise.resolve({ co2e: 0 }),
       packages > 0 ? post({ emission_factor: { activity_id: 'freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t' }, parameters: { weight: packages * 0.5, weight_unit: 'kg', distance: deliveryDist, distance_unit: 'km' } }) : Promise.resolve({ co2e: 0 }),
       clothingNewPW > 0 ? post({ emission_factor: { activity_id: CLOTHING_NEW_ACTIVITY, region: 'US' }, parameters: { money: clothingNewPW, money_unit: 'usd' } }) : Promise.resolve({ co2e: 0 }),
       (flightCount > 0 && flightKm > 0)
