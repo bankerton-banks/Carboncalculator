@@ -302,18 +302,20 @@ async function calculate() {
     const flightCount  = parseFloat(document.getElementById('flight-count').value)              || 0;
     const flightInput  = parseFloat(document.getElementById('flight-km').value)                 || 0;
 
-    const flightKm        = units === 'imperial' ? flightInput * MI_TO_KM : flightInput;
-    const meatKgPerWeek   = meatMeals * MEAT_KG_PER_MEAL[meatType];
-    const flightKmPerWeek = (flightCount * flightKm) / 52;
-    const deliveryDist    = DELIVERY_DISTANCE[deliveryType];
-    const clothingNewPW   = clothingNew  / 4.33;
-    const clothingUsedPW  = clothingUsed / 4.33;
+    const flightKm      = units === 'imperial' ? flightInput * MI_TO_KM : flightInput;
+    const meatKgPerWeek = meatMeals * MEAT_KG_PER_MEAL[meatType];
+    const deliveryDist  = DELIVERY_DISTANCE[deliveryType];
+    const clothingNewPW = clothingNew  / 4.33;
+    const clothingUsedPW = clothingUsed / 4.33;
 
     const [dietData, packageData, clothingNewData, flightData] = await Promise.all([
       meatKgPerWeek > 0 ? post({ emission_factor: { activity_id: MEAT_ACTIVITY[meatType] }, parameters: { weight: meatKgPerWeek, weight_unit: 'kg' } }) : Promise.resolve({ co2e: 0 }),
       packages > 0 ? post({ emission_factor: { activity_id: 'freight_vehicle-vehicle_type_van-fuel_source_diesel-vehicle_weight_lt_3.5t' }, parameters: { weight: packages * 0.5, weight_unit: 'kg', distance: deliveryDist, distance_unit: 'km' } }) : Promise.resolve({ co2e: 0 }),
       clothingNewPW > 0 ? post({ emission_factor: { activity_id: CLOTHING_NEW_ACTIVITY, region: 'US' }, parameters: { money: clothingNewPW, money_unit: 'usd' } }) : Promise.resolve({ co2e: 0 }),
-      flightKmPerWeek > 0 ? post({ emission_factor: { activity_id: 'passenger_flight-route_type_outside_uk-aircraft_type_na-distance_na-class_economy-rf_included-distance_uplift_included' }, parameters: { distance: flightKmPerWeek, distance_unit: 'km', passengers: 1 } }) : Promise.resolve({ co2e: 0 })
+      (flightCount > 0 && flightKm > 0)
+        ? post({ emission_factor: { activity_id: 'passenger_flight-route_type_outside_uk-aircraft_type_na-distance_na-class_economy-rf_included-distance_uplift_included' }, parameters: { distance: flightKm, distance_unit: 'km', passengers: 1 } })
+            .then(d => ({ co2e: (d.co2e * flightCount) / 52 }))
+        : Promise.resolve({ co2e: 0 })
     ]);
 
     const clothingNewCo2e  = clothingNewData.co2e || 0;
