@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — The Carbon Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    #about-content {
+      background: var(--green-light);
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-content: start;
+      min-height: 100vh;
+    }
+
+    .about-card-note {
+      grid-column: 1 / -1;
+      padding: 1rem 1.5rem;
+      border: 1.5px solid var(--green);
+      background: var(--white);
+      font-size: 0.9em;
+      color: var(--dark);
+      line-height: 20px;
+    }
+
+    .card p {
+      font-size: 0.9em;
+      line-height: 20px;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+
+    .card p:last-child { margin-bottom: 0; }
+
+    .card ul {
+      padding-left: 18px;
+      color: var(--dark);
+      font-size: 0.9em;
+      line-height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      #app { flex-direction: column; }
+
+      #sidebar {
+        position: static;
+        height: auto;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1.5px solid var(--green);
+      }
+
+      #about-content {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+
+      .about-card-note { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-calc">
+      <div class="header">About<br>this<br>project</div>
+      <div>
+        <a href="index.html" id="back-btn" style="display:inline-block; margin-top:24px; text-decoration: none;">← back to calculator</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div id="right-col">
+    <div id="about-content">
+
+      <div class="card">
+        <h2>What is this?</h2>
+        <p>The Carbon Calculator estimates your personal weekly CO₂ footprint from four categories of consumer behavior — diet, shipping, clothing, and flights.</p>
+        <p>Results are placed in context against real per-capita emissions data from 17 countries, visualised as an interactive bubble chart.</p>
+      </div>
+
+      <div class="card">
+        <h2>Who made this?</h2>
+        <p>This project was made by Finley Banks as part of Interaction Studio at Parsons School of Design, Spring 2026.  <br> Contact: finleybugbanks@gmail.com</p>
+      </div>
+
+      <div class="card">
+        <h2>How are emissions calculated?</h2>
+        <p>Emissions are estimated using the <a href="https://www.climatiq.io" target="_blank" style="color:var(--green);">Climatiq API</a>, which applies peer-reviewed emission factors to your inputs.</p>
+        <ul>
+          <li><strong>Diet</strong> — weekly meat consumption weight and type.</li>
+          <li><strong>Packages</strong> — van freight scaled by packages per week.</li>
+          <li><strong>Clothing</strong> — monthly spend on new garments; secondhand discounted 80%.</li>
+          <li><strong>Flights</strong> — per flight using actual route distance, amortised weekly.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Where does the country data come from?</h2>
+        <p>Per-capita figures for flights, meat, clothing, and e-commerce CO₂ are drawn from publicly available national statistics and consumption research datasets.</p>
+        <p>All values represent approximate annual averages per person, converted to a common unit for comparison.</p>
+      </div>
+
+      <div class="about-card-note">
+        Emission estimates are approximations for educational purposes and should not be used for carbon accounting or compliance reporting.
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

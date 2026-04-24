@@ -88,15 +88,15 @@
     }
 
     .header {
-      font-size: 4em;
-      line-height: 55px;
+      font-size: 4.7em;
+      line-height: 65px;
       color: var(--green);
       font-family: ease, Georgia, serif;
     }
 
     .subtext {
       margin-top: 10px;
-      margin-bottom: 40px;
+      margin-bottom: 10px;
       font-size: 0.9em;
       color: #003012;
     }
@@ -109,22 +109,38 @@
       gap: 3px;
       width: max-content;
       margin-top: 20px;
+      border-radius: 100px;
     }
 
     .toggle-btn {
       padding: 6px 14px;
       border: none;
       background: none;
-      font-size: 1em;
+      font-size: 0.9em;
       cursor: pointer;
       color: var(--dark);
       font-family: pangea, system-ui, sans-serif;
+      border-radius: 100px;
     }
 
     .toggle-btn.active {
       background: var(--green-light);
       border: 1.5px solid var(--green);
     }
+
+    .about-btn {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.85em;
+      color: var(--green);
+      text-decoration: none;
+      font-family: pangea, system-ui, sans-serif;
+      letter-spacing: 0.02em;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .about-btn:hover { border-bottom-color: var(--green); }
 
     /* ══════════════════════════════
        RIGHT SCROLLABLE COLUMN

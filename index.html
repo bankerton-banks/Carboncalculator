@@ -31,16 +31,19 @@
 
     <!-- Calc sidebar content -->
     <div id="sidebar-calc">
-      <div class="header">CO2 Emissions:<br>Visualized</div>
+      <div class="header">The<br>Carbon<br>Calculator</div>
       <div>
-
-         <h1 style="margin-top:24px;">Enter your weekly habits to see your climate impact.</h1>
-         <p class="subtext">Your carbon footprint will be estimated from these inputs plus the US average consumption of electricity and fossil fuels.</p>
-          <div class="toggle-wrap">
+          <!-- <div class="toggle-wrap" style="margin-top:24px;">
             <button class="toggle-btn" id="btn-metric"   onclick="setUnits('metric')">Metric</button>
             <button class="toggle-btn active" id="btn-imperial" onclick="setUnits('imperial')">Imperial</button>
+         </div> -->
+         <div class="toggle-wrap" style="margin-top:12px;">
+           <a href="about.html" class="toggle-btn" style="text-decoration:none;">About this project →</a>
          </div>
-    </div>
+         <h1 style="margin-top:24px;">Enter your weekly habits to see your C02 emissions.</h1>
+         <p class="subtext">Your carbon footprint will be estimated from these inputs plus the US average consumption of electricity and fossil fuels.</p>
+          <p style="margin-top: 10px; font-size:0.9em; color:#003012;"> This site is powered through <a href="https://www.climatiq.io/" target="_blank" style="color:var(--green);">Climatiq</a> API</p>
+     </div>
     </div>
 
     <!-- Chart sidebar content (fades in over calc content) -->
@@ -153,7 +156,7 @@
 
       <div class="err" id="err"></div>
 
-      <button class="go" id="calc-btn" onclick="calculate()">Calculate my weekly footprint</button>
+      <button class="go" id="calc-btn" onclick="calculate()" style="font-size:0.9em;">Calculate my weekly footprint</button>
 
       <!-- RESULTS -->
       <div id="result">
