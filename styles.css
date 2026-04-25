@@ -494,11 +494,22 @@
         width: 100%;
         border-right: none;
         border-bottom: 1.5px solid var(--green);
+        background-color: var(--white);
       }
 
       #sidebar-calc, #sidebar-chart {
         position: static;
-        padding: 24px 20px;
+        padding: 30px 20px 50px;
+      }
+
+      .header {
+        font-size: 4em;
+        line-height: 55px;
+        margin-bottom: 100px;
+      }
+
+      #sidebar-calc > div {
+        margin-top: 0px;
       }
 
       #right-col {
@@ -510,6 +521,16 @@
         order: 1;
         grid-template-columns: 1fr;
         padding: 20px;
+        justify-items: center;
+      }
+
+      #section-calc .card {
+        width: 100%;
+        text-align: center;
+      }
+
+      #section-calc label {
+        text-align: center;
       }
 
       #section-divider { display: none !important; }
