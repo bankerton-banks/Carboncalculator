@@ -476,7 +476,7 @@ function buildChart() {
     r:   rScale(metricVal(d, metricMode)),
     x:   W / 2 + (Math.random() - 0.5) * W * 0.3,
     y:   H / 2 + (Math.random() - 0.5) * H * 0.3,
-  })).sort((a, b) => b.r - a.r);
+  }));
 
   const g = svg.append('g');
 
