@@ -541,6 +541,9 @@ function buildChart() {
   const userNode = nodes.find(n => n.isUser);
   let selectedNode = userNode || null;
 
+  // Pin user bubble permanently to center
+  if (userNode) { userNode.fx = W / 2; userNode.fy = H / 2; }
+
   nodeG
     .on('mouseover', function(event, d) {
       d3.select(this).select('circle')
@@ -568,14 +571,14 @@ function buildChart() {
 
   if (sim) sim.stop();
   sim = d3.forceSimulation(nodes)
-    .force('charge',  d3.forceManyBody().strength(-20))
-    .force('center',  d3.forceCenter(W / 2, H / 2))
-    .force('collide', d3.forceCollide(d => d.r + 3).strength(0.85).iterations(4))
-    .force('x',       d3.forceX(W / 2).strength(0.1))
-    .force('y',       d3.forceY(H / 2).strength(0.1))
+    .force('charge',  d3.forceManyBody().strength(5))
+    .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.08))
+    .force('collide', d3.forceCollide(d => d.r + 3).strength(0.9).iterations(3))
+    .force('x',       d3.forceX(W / 2).strength(0.04))
+    .force('y',       d3.forceY(H / 2).strength(0.04))
     .on('tick', () => {
       nodeG.attr('transform', d =>
-        `translate(${Math.max(d.r + 4, Math.min(W - d.r - 4, d.x))},${Math.max(d.r + 4, Math.min(H - d.r - 4, d.y))})`
+        `translate(${Math.max(d.r, Math.min(W - d.r, d.x))},${Math.max(d.r, Math.min(H - d.r, d.y))})`
       );
     });
 
