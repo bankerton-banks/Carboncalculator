@@ -538,35 +538,15 @@ function buildChart() {
     });
   }
 
-  const userNode = nodes.find(n => n.isUser);
-  let selectedNode = userNode || null;
-
-  // Pin user bubble permanently to center
-  if (userNode) { userNode.fx = W / 2; userNode.fy = H / 2; }
-
   nodeG
     .on('mouseover', function(event, d) {
-      d3.select(this).select('circle')
-        .transition().duration(150).ease(d3.easeCubicOut)
-        .attr('r', d.r * 1.1)
-        .attr('stroke-width', 3.5);
+      d3.select(this).select('circle').attr('stroke-width', 3.5);
       renderSidebar(d);
     })
     .on('mouseout', function(event, d) {
-      d3.select(this).select('circle')
-        .transition().duration(250).ease(d3.easeCubicOut)
-        .attr('r', d.r)
-        .attr('stroke-width', d.isUser ? 2.5 : 1.5);
-      if (selectedNode) renderSidebar(selectedNode); else clearSidebar();
-    })
-    .on('click', function(event, d) {
-      selectedNode = d;
-      d3.select(this).select('circle')
-        .transition().duration(80).ease(d3.easeCubicOut)
-        .attr('r', d.r * 1.18)
-        .transition().duration(200).ease(d3.easeCubicOut)
-        .attr('r', d.r * 1.1);
-      renderSidebar(d);
+      d3.select(this).select('circle').attr('stroke-width', d.isUser ? 2.5 : 1.5);
+      const user = nodes.find(n => n.isUser);
+      if (user) renderSidebar(user); else clearSidebar();
     });
 
   if (sim) sim.stop();
@@ -586,6 +566,7 @@ function buildChart() {
     .transition().duration(600).delay((d, i) => i * 40)
     .attr('opacity', 1);
 
+  const userNode = nodes.find(n => n.isUser);
   if (userNode) setTimeout(() => renderSidebar(userNode), 800);
 }
 
