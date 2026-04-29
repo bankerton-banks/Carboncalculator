@@ -48,9 +48,15 @@
       #sidebar {
         position: static;
         height: auto;
-        width: 100%;
-        border-right: none;
-        border-bottom: 1.5px solid var(--green);
+        width: calc(100% - 40px);
+        border: 1.5px solid var(--green);
+        border-radius: 10px;
+        background-color: var(--white);
+        margin: 20px;
+      }
+
+      #sidebar-calc {
+        padding: 30px 20px;
       }
 
       #about-content {
@@ -70,8 +76,8 @@
   <div id="sidebar">
     <div id="sidebar-calc">
       <div class="header">About<br>this<br>project</div>
-      <div>
-        <a href="index.html" id="back-btn" style="display:inline-block; margin-top:24px; text-decoration: none;">← back to calculator</a>
+      <div style="margin-top:75px;">
+        <a href="index.html" id="back-btn" style="display:inline-block; text-decoration: none;">← back to calculator</a>
       </div>
     </div>
   </div>

@@ -114,14 +114,17 @@
 
     .toggle-btn {
       padding: 6px 14px;
-      border: none;
+      border: 1.5px solid var(--green);
       background: none;
       font-size: 0.9em;
       cursor: pointer;
       color: var(--dark);
       font-family: pangea, system-ui, sans-serif;
       border-radius: 100px;
+      transition: background 0.2s, color 0.2s;
     }
+
+    .toggle-btn:hover { background: var(--green); color: var(--white); }
 
     .toggle-btn.active {
       background: var(--green-light);
@@ -165,6 +168,7 @@
       padding: 1.25rem 1.5rem;
       border: 1.5px solid var(--green);
       background: var(--white);
+      border-radius: 10px;
     }
 
     .card h2 {
@@ -203,6 +207,7 @@
       background: var(--white);
       height: 44px;
       font-family: pangea, system-ui, sans-serif;
+      border-radius: 5px;
     }
 
     input:focus, select:focus {
@@ -232,6 +237,7 @@
       font-size: 1em;
       cursor: pointer;
       font-family: pangea, system-ui, sans-serif;
+      border-radius: 10px;
       transition: background 0.2s, color 0.2s;
     }
 
@@ -250,6 +256,7 @@
       padding: 1.5rem;
       border: 1.5px solid var(--green);
       background: var(--white);
+      border-radius: 10px;
     }
 
     #result h2 {
@@ -269,6 +276,7 @@
       background: var(--green-light);
       padding: 10px 14px;
       border: 1px solid var(--green);
+      border-radius: 5px;
     }
 
     .result-item .val {
@@ -491,21 +499,22 @@
       #sidebar {
         position: static;
         height: auto;
-        width: 100%;
-        border-right: none;
-        border-bottom: 1.5px solid var(--green);
+        width: calc(100% - 40px);
+        border: 1.5px solid var(--green);
         background-color: var(--white);
+        margin: 20px;
+        border-radius: 10px;
       }
 
       #sidebar-calc, #sidebar-chart {
         position: static;
-        padding: 30px 20px 50px;
+        padding: 30px 20px 30px;
       }
 
       .header {
         font-size: 4em;
         line-height: 55px;
-        margin-bottom: 100px;
+        margin-bottom: 75px;
       }
 
       #sidebar-calc > div {
@@ -526,11 +535,11 @@
 
       #section-calc .card {
         width: 100%;
-        text-align: center;
+        text-align: left;
       }
 
       #section-calc label {
-        text-align: center;
+        text-align: left;
       }
 
       #section-divider { display: none !important; }
@@ -552,7 +561,7 @@
         height: 80vh;
       }
 
-      .field-row { flex-direction: column; }
+      .field-row { flex-direction: column; align-items: stretch; }
       .result-grid { grid-template-columns: 1fr 1fr; }
     }
 @media (max-width: 768px) {
