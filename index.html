@@ -448,9 +448,11 @@ function metricVal(d, m) {
 
 function buildChart() {
   const container = document.getElementById('sketch-container');
+  const chartRight = document.getElementById('chart-right');
+  const rect = chartRight.getBoundingClientRect();
   const mobile = window.innerWidth <= 768;
-  const W = container.clientWidth  || (mobile ? window.innerWidth : 600);
-  const H = container.clientHeight || (mobile ? window.innerHeight * 0.8 : 600);
+  const W = rect.width  || (mobile ? window.innerWidth : 800);
+  const H = rect.height || (mobile ? window.innerHeight * 0.8 : 600);
 
   const svg = d3.select('#chart-svg');
   svg.attr('viewBox', `0 0 ${W} ${H}`);
