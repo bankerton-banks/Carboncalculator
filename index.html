@@ -500,7 +500,7 @@ function buildChart() {
     .style('font-family', 'pangea, system-ui, sans-serif')
     .attr('fill', '#fff')
     .attr('font-size', d => Math.max(9, Math.min(13, d.r * 0.38)))
-    .attr('font-weight', d => d.isUser ? '600' : '400')
+    .attr('font-weight', '400')
     .text(d => d.r > 14 ? (d.isUser ? 'You ★' : d.name) : '');
 
   function renderSidebar(d) {
