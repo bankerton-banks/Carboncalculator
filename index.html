@@ -423,10 +423,10 @@ const RAW = [
 ];
 
 const COUNTRY_COLORS = {
-  China:'#72c9e8', India:'#1b7fc4', Russia:'#0d3b6e', Germany:'#c39bd3',
-  UK:'#7d3c98', Canada:'#3b1f6e', Australia:'#f4a7c3', Brazil:'#e0468e',
-  Nigeria:'#8e1a52', Indonesia:'#f0836a', Switzerland:'d62828', France:'#7a1515',
-  Ireland:'#d4892a', Norway:'#7a6652', Qatar:'#3d3d4e', UAE:'#c0722a',
+  China:'#39c9c2', India:'#761100', Russia:'#633855', Germany:'#0117E1',
+  UK:'#549eaf', Canada:'#ff7644', Australia:'#b5a0c9', Brazil:'#170048',
+  Nigeria:'#00473f', Indonesia:'#684a3c', Switzerland:'#7a78e0', France:'#9e9541',
+  Ireland:'#ff70a5', Norway:'#364730', Qatar:'#008cad', UAE:'#ad712f',
   USA: '#a03d63',
 };
 
@@ -447,21 +447,13 @@ function metricVal(d, m) {
 }
 
 function buildChart() {
-  const chartRight = document.getElementById('chart-right');
-  const rect = chartRight.getBoundingClientRect();
+  const container = document.getElementById('sketch-container');
   const mobile = window.innerWidth <= 768;
-  const W = rect.width;
-  const H = rect.height;
-
-  if (!W || !H) {
-    requestAnimationFrame(buildChart);
-    return;
-  }
+  const W = container.clientWidth  || (mobile ? window.innerWidth : 600);
+  const H = container.clientHeight || (mobile ? window.innerHeight * 0.8 : 600);
 
   const svg = d3.select('#chart-svg');
-  svg.attr('viewBox', `0 0 ${W} ${H}`)
-     .attr('width', W)
-     .attr('height', H);
+  svg.attr('viewBox', `0 0 ${W} ${H}`);
   svg.selectAll('*').remove();
 
   const data = [...RAW];
@@ -559,12 +551,11 @@ function buildChart() {
 
   if (sim) sim.stop();
   sim = d3.forceSimulation(nodes)
-    .alphaDecay(0.01)
-    .force('charge',  d3.forceManyBody().strength(-30))
-    .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.05))
-    .force('collide', d3.forceCollide(d => d.r + 4).strength(1).iterations(12))
-    .force('x',       d3.forceX(W / 2).strength(0.03))
-    .force('y',       d3.forceY(H / 2).strength(0.03))
+    .force('charge',  d3.forceManyBody().strength(5))
+    .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.08))
+    .force('collide', d3.forceCollide(d => d.r + 6).strength(1).iterations(8))
+    .force('x',       d3.forceX(W / 2).strength(0.04))
+    .force('y',       d3.forceY(H / 2).strength(0.04))
     .on('tick', () => {
       nodeG.attr('transform', d =>
         `translate(${Math.max(d.r, Math.min(W - d.r, d.x))},${Math.max(d.r, Math.min(H - d.r, d.y))})`
