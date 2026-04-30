@@ -423,11 +423,11 @@ const RAW = [
 ];
 
 const COUNTRY_COLORS = {
-  China:'#4BBBD9', India:'#761100', Russia:'#CD00E1', Germany:'#0117E1',
-  UK:'#ff7644', Canada:'#B5A0C9', Australia:'#170048', Brazil:'#00473F',
-  Nigeria:'#660053', Indonesia:'#7A78E0', Switzerland:'#ffe000', France:'#FF70A5',
-  Ireland:'#7109AE', Norway:'#008CAD', Qatar:'#FF930F', UAE:'#AD0028',
-  USA: '#a35586',
+  China:'#39c9c2', India:'#761100', Russia:'#633855', Germany:'#0117E1',
+  UK:'#549eaf', Canada:'#ff7644', Australia:'#b5a0c9', Brazil:'#170048',
+  Nigeria:'#00473f', Indonesia:'#684a3c', Switzerland:'#7a78e0', France:'#9e9541',
+  Ireland:'#ff70a5', Norway:'#364730', Qatar:'#008cad', UAE:'#ad712f',
+  USA: '#a03d63',
 };
 
 const BREAKDOWN_KEYS = [
@@ -553,7 +553,7 @@ function buildChart() {
   sim = d3.forceSimulation(nodes)
     .force('charge',  d3.forceManyBody().strength(5))
     .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.08))
-    .force('collide', d3.forceCollide(d => d.r + 3).strength(0.9).iterations(3))
+    .force('collide', d3.forceCollide(d => d.r + 6).strength(1).iterations(8))
     .force('x',       d3.forceX(W / 2).strength(0.04))
     .force('y',       d3.forceY(H / 2).strength(0.04))
     .on('tick', () => {
