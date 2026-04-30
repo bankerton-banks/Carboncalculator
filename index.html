@@ -447,15 +447,21 @@ function metricVal(d, m) {
 }
 
 function buildChart() {
-  const container = document.getElementById('sketch-container');
   const chartRight = document.getElementById('chart-right');
   const rect = chartRight.getBoundingClientRect();
   const mobile = window.innerWidth <= 768;
-  const W = rect.width  || (mobile ? window.innerWidth : 800);
-  const H = rect.height || (mobile ? window.innerHeight * 0.8 : 600);
+  const W = rect.width;
+  const H = rect.height;
+
+  if (!W || !H) {
+    requestAnimationFrame(buildChart);
+    return;
+  }
 
   const svg = d3.select('#chart-svg');
-  svg.attr('viewBox', `0 0 ${W} ${H}`);
+  svg.attr('viewBox', `0 0 ${W} ${H}`)
+     .attr('width', W)
+     .attr('height', H);
   svg.selectAll('*').remove();
 
   const data = [...RAW];
