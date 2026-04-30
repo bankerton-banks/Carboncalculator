@@ -467,7 +467,7 @@ function buildChart() {
   });
 
   const maxVal = Math.max(...data.map(d => metricVal(d, metricMode)));
-  const maxR   = Math.min(W, H) * 0.11;
+  const maxR   = Math.min(W, H) * 0.13;
   const rScale = d3.scalePow().exponent(0.35).domain([0, maxVal]).range([3, maxR]);
 
   const nodes = data.map(d => ({
