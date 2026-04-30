@@ -467,7 +467,7 @@ function buildChart() {
   });
 
   const maxVal = Math.max(...data.map(d => metricVal(d, metricMode)));
-  const maxR   = Math.min(W, H) * 0.14;
+  const maxR   = Math.min(W, H) * 0.11;
   const rScale = d3.scalePow().exponent(0.35).domain([0, maxVal]).range([3, maxR]);
 
   const nodes = data.map(d => ({
@@ -551,26 +551,19 @@ function buildChart() {
 
   if (sim) sim.stop();
   sim = d3.forceSimulation(nodes)
-    .alphaDecay(0.008)
-    .force('charge',  d3.forceManyBody().strength(-60))
-    .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.03))
-    .force('collide', d3.forceCollide(d => d.r + 5).strength(1).iterations(20))
+    .force('charge',  d3.forceManyBody().strength(-80))
+    .force('center',  d3.forceCenter(W / 2, H / 2).strength(0.02))
+    .force('collide', d3.forceCollide(d => d.r + 5).strength(1).iterations(30))
     .force('x',       d3.forceX(W / 2).strength(0.02))
     .force('y',       d3.forceY(H / 2).strength(0.02))
     .stop();
 
-  // Pre-settle positions so bubbles never appear overlapping
-  for (let i = 0; i < 300; i++) sim.tick();
+  // Run to completion silently — guarantees no overlaps before render
+  for (let i = 0; i < 500; i++) sim.tick();
 
   nodeG.attr('transform', d =>
     `translate(${Math.max(d.r, Math.min(W - d.r, d.x))},${Math.max(d.r, Math.min(H - d.r, d.y))})`
   );
-
-  sim.on('tick', () => {
-    nodeG.attr('transform', d =>
-      `translate(${Math.max(d.r, Math.min(W - d.r, d.x))},${Math.max(d.r, Math.min(H - d.r, d.y))})`
-    );
-  }).restart();
 
   nodeG.select('circle')
     .transition().duration(600).delay((d, i) => i * 40)
